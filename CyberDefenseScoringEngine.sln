@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31229.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F33D458-FBED-47B7-BA85-F8CE72ECC203}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineController", "EngineController\EngineController.csproj", "{AE08ECF0-87B9-4E1E-8CA4-B814D1773151}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE08ECF0-87B9-4E1E-8CA4-B814D1773151}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE08ECF0-87B9-4E1E-8CA4-B814D1773151}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE08ECF0-87B9-4E1E-8CA4-B814D1773151}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE08ECF0-87B9-4E1E-8CA4-B814D1773151}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01496E24-B6EB-42BB-9F9F-306165A8E495}
+	EndGlobalSection
+EndGlobal

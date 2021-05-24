@@ -1,0 +1,67 @@
+﻿@page
+
+@using EngineController.Models;
+
+@model EngineController.Pages.CompetitionPenalties.CreateModel
+
+@{
+    ViewData["Title"] = "Create Penalty";
+}
+
+<h1>Create Penalty</h1>
+
+<h4>Competition Penalty</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" id="create-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CompetitionPenalty.PenaltyName" class="control-label"></label>
+                <input asp-for="CompetitionPenalty.PenaltyName" class="form-control" />
+                <span asp-validation-for="CompetitionPenalty.PenaltyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompetitionPenalty.SystemIdentifier" class="control-label"></label>
+                <input asp-for="CompetitionPenalty.SystemIdentifier" class="form-control" />
+                <span asp-validation-for="CompetitionPenalty.SystemIdentifier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompetitionPenalty.Points" class="control-label"></label>
+                <input asp-for="CompetitionPenalty.Points" class="form-control" />
+                <span asp-validation-for="CompetitionPenalty.Points" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompetitionPenalty.ScriptType" class="control-label"></label>
+                <select asp-for="CompetitionPenalty.ScriptType" class="form-control" id="script-language-selector" asp-items="Html.GetEnumSelectList<ScriptType>()"></select>
+                <span asp-validation-for="CompetitionPenalty.ScriptType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompetitionPenalty.PenaltyScript" class="control-label"></label>
+                <div id="editor" style="min-height: 400px"></div>
+                <input asp-for="CompetitionPenalty.PenaltyScript" type="hidden" id="penalty-input" />
+                <span asp-validation-for="CompetitionPenalty.PenaltyScript" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/lib/monaco/loader.js"></script>
+    <script src="~/js/editors.js"></script>
+    <script>
+        setupEditor({
+            form: 'create-form',
+            input: 'penalty-input',
+        })
+    </script>
+}
