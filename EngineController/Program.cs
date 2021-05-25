@@ -26,7 +26,8 @@ namespace EngineController
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();
-				});
+				})
+				.ConfigureAppConfiguration(config => config.AddEnvironmentVariables());
 
 		private static void CreateDbIfNotExists(IHost host)
 		{

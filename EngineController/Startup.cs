@@ -17,9 +17,9 @@ namespace EngineController
 {
 	public class Startup
 	{
-		public Startup(IConfiguration configuration)
+		public Startup(IHostEnvironment env)
 		{
-			Configuration = configuration;
+			Configuration = ConfigureConfiguration(env);
 		}
 
 		public IConfiguration Configuration { get; }
@@ -41,11 +41,12 @@ namespace EngineController
 
 		public IConfigurationRoot ConfigureConfiguration(IHostEnvironment hostingEnvironment)
 		{
-			var builder = new ConfigurationBuilder()
+			return new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
 				.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true)
-				.AddEnvironmentVariables();
-			return builder.Build();
+				.AddJsonFile($"appsettings.{Environment.OSVersion.Platform}.json", optional: true)
+				.AddEnvironmentVariables()
+				.Build();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

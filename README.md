@@ -10,4 +10,10 @@ The following programs are needed for development:
 - .NET 5 SDK
 - Either Visual Studio or Visual Studio Code
 
-### Running the code
+From the project root, run the following command:
+
+```
+dotnet restore EngineController/EngineController.csproj
+```
+
+After making changes, run `dotnet run --project EngineController/EngineController.csproj` to build and run the code
