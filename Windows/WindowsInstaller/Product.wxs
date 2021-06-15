@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="*" Name="WindowsInstaller" Language="1033" Version="1.0.0.0" Manufacturer="Andrew Rioux" UpgradeCode="788c5714-adc2-4f96-a848-ea9aadeb8cf5">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+
+		<Feature Id="ProductFeature" Title="WindowsInstaller" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+		
+		<Property Id="SERVER_IP"></Property>
+		
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="WindowsClient" />
+			</Directory>
+		</Directory>
+		
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Id="ProductComponent" Guid="{2414cca2-9340-4eb1-af72-33538ec35f03}">
+				<File Id="WindowsClient.exe" Source="$(var.WindowsClient.TargetPath)" KeyPath="yes" />
+
+				<!-- ServiceInstall
+					ErrorControl="normal"
+					Account=".\SYSTEM" 
+					Name="CyberDefense Scoring Engine" 
+					Type="ownProcess"
+					Start="auto"
+					Id="cyberdefense-scoring"
+					Vital="yes">
+				</ServiceInstall -->
+			</Component>
+
+			<!-- Component Id="Settings" Guid="{c0885fe9-61eb-4b3f-b815-ee8d41af2b1b}">
+				<util:XmlFile Id="ServerIp"
+					Action="setValue"
+					ElementPath='/configuration/connectionStrings/add[\[]@name="DefaultConnection"[\]]/@connectionString'
+					File='[INSTALLFOLDER]web.config'
+					Value='[SERVER_IP]' />
+			</Component -->
+		</ComponentGroup>
+
+		<Feature Id="CyberDefenseClient" Title="Cyber Defense Scoring Client">
+			<ComponentRef Id="ProductCOmponent" />
+			<!-- ComponentRef Id="Settings" / -->
+		</Feature>
+	</Product>
+</Wix>
