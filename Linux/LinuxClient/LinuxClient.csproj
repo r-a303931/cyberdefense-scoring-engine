@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-	<PublishSingleFile>true</PublishSingleFile>
-	<RootNamespace>Clients.Linux.Main</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<PublishSingleFile>true</PublishSingleFile>
+		<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+		<RootNamespace>Clients.Linux.Main</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\ClientDataManager\ClientService.csproj" />
-    <ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
-    <ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
-    <ProjectReference Include="..\..\Common\ClientWebInterface\ClientWebInterface.csproj" />
-    <ProjectReference Include="..\LinuxConstants\LinuxConstants.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Common\ClientDataManager\ClientService.csproj" />
+		<ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
+		<ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
+		<ProjectReference Include="..\..\Common\ClientWebInterface\ClientWebInterface.csproj" />
+		<ProjectReference Include="..\LinuxConstants\LinuxConstants.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -57,11 +57,11 @@ To run it, run `docker run -d -p 80:80 enginecontroller`
 First, publish the WindowsClient project using `dotnet publish -c Release` inside Windows/WindowsClient
 Then, run `dotnet publish -c Release` inside Windows/WindowsInstaller
 
-To install, run the `bin/Release/net5.0/publish/WindowsInstaller.exe` executable on your target machine
+The resulting `WindowsInstaller` executable should be located in either `Windows/WindowsInstaller/bin/Release/net5.0/windows-x64/publish` or `Windows/WindowsInstaller/bin/Release/net5.0/publish`
 
 ### LinuxClient
 
 First, publish the LinuxClient project using `dotnet publish -c Release` inside Linux/LinuxClient
 Then, run `dotnet publish -c Release` inside Linux/LinuxInstaller
 
-To install, run the `bin/Release/net5.0/publish/LinuxInstaller` executable on your target machine
+The resulting `LinuxInstaller` executable should be located in either `Linux/LinuxInstaller/bin/Release/net5.0/linux-x64/publish` or `Linux/LinuxInstaller/bin/Release/net5.0/publish`

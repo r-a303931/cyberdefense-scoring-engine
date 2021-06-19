@@ -32,7 +32,7 @@ namespace ClientCommon.Data
                 throw new Exception("Engine controller host is undefined");
             }
 
-            using var httpResponse = await HttpClient.GetAsync($"http://{config.EngineControllerHost}:5000/api/systems", cancellationToken);
+            using var httpResponse = await HttpClient.GetAsync($"http://{config.EngineControllerHost}/api/systems", cancellationToken);
 
             httpResponse.EnsureSuccessStatusCode();
 
@@ -65,7 +65,7 @@ namespace ClientCommon.Data
                 throw new Exception("Engine controller host is undefined");
             }
 
-            using var httpResponse = await HttpClient.GetAsync($"http://{config.EngineControllerHost}:5000/api/teams", cancellationToken);
+            using var httpResponse = await HttpClient.GetAsync($"http://{config.EngineControllerHost}/api/teams", cancellationToken);
 
             httpResponse.EnsureSuccessStatusCode();
 
@@ -106,7 +106,7 @@ namespace ClientCommon.Data
 
             var content = JsonContent.Create(from task in tasks select task.ID);
 
-            using var httpResponse = await HttpClient.PostAsync($"http://{config.EngineControllerHost}:5000/api/teams/completetask?teamID={teamID}", content, cancellationToken);
+            using var httpResponse = await HttpClient.PostAsync($"http://{config.EngineControllerHost}/api/teams/completetask?teamID={teamID}", content, cancellationToken);
 
             httpResponse.EnsureSuccessStatusCode();
         }
@@ -129,7 +129,7 @@ namespace ClientCommon.Data
 
             var content = JsonContent.Create(from penalty in penalties select penalty.ID);
 
-            using var httpResponse = await HttpClient.PostAsync($"http://{config.EngineControllerHost}:5000/api/teams/applypenalty?teamID={teamID}", content, cancellationToken);
+            using var httpResponse = await HttpClient.PostAsync($"http://{config.EngineControllerHost}/api/teams/applypenalty?teamID={teamID}", content, cancellationToken);
 
             httpResponse.EnsureSuccessStatusCode();
         }
@@ -150,7 +150,7 @@ namespace ClientCommon.Data
         {
             try
             {
-                using var httpResponse = await HttpClient.GetAsync($"http://{host}:5000/api/connection", cancellationToken);
+                using var httpResponse = await HttpClient.GetAsync($"http://{host}/api/connection", cancellationToken);
 
                 httpResponse.EnsureSuccessStatusCode();
 
