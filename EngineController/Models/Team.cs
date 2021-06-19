@@ -30,6 +30,6 @@ namespace EngineController.Models
 			}
 		}
 
-		public ICollection<RegisteredVirtualMachines> RegisteredVirtualMachines { get; set; }
+		public ICollection<RegisteredVirtualMachine> RegisteredVirtualMachines { get; set; }
 	}
 }

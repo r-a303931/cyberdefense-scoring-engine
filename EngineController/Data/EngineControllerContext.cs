@@ -27,6 +27,8 @@ namespace EngineController.Data
 
         public DbSet<CompetitionSystem> CompetitionSystems { get; set; }
 
+        public DbSet<RegisteredVirtualMachine> RegisteredVirtualMachines { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -83,13 +85,13 @@ namespace EngineController.Data
                 .WithOne()
                 .HasForeignKey(t => t.SystemIdentifier);
 
-            modelBuilder.Entity<RegisteredVirtualMachines>()
+            modelBuilder.Entity<RegisteredVirtualMachine>()
                 .ToTable("RegisteredVirtualMachines");
-            modelBuilder.Entity<RegisteredVirtualMachines>()
+            modelBuilder.Entity<RegisteredVirtualMachine>()
                 .HasOne(r => r.Team)
                 .WithMany()
                 .HasForeignKey(r => r.TeamID);
-            modelBuilder.Entity<RegisteredVirtualMachines>()
+            modelBuilder.Entity<RegisteredVirtualMachine>()
                 .HasOne(r => r.CompetitionSystem)
                 .WithMany()
                 .HasForeignKey(r => r.SystemIdentifier);

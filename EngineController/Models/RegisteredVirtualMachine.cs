@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace EngineController.Models
 {
-    public class RegisteredVirtualMachines
+    public class RegisteredVirtualMachine
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
