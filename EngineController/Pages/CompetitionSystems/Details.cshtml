@@ -1,0 +1,113 @@
+﻿@page
+@model EngineController.Pages.CompetitionSystems.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <h1>System Information - @Model.CompetitionSystem.SystemIdentifier</h1>
+    <hr />
+    <h4>Basic information</h4>
+    <div>
+        <a asp-page="./Edit" asp-route-id="@Model.CompetitionSystem.ID">Edit</a> |
+        <a asp-page="./Index">Back to List</a>
+    </div>
+    <br />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.CompetitionSystem.SystemIdentifier)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.CompetitionSystem.SystemIdentifier)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.CompetitionSystem.ReadmeText)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.Raw(Model.ReadmeHTML)
+        </dd>
+    </dl>
+    <hr />
+    <h4>Tasks</h4>
+    <p>
+        <a asp-page="../CompetitionTasks/Create" asp-route-systemidentifier="@Model.CompetitionSystem.ID">Create New Task</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Points
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model.CompetitionSystem.CompetitionTasks) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaskName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Points)
+                </td>
+                <td>
+                    <a asp-page="../CompetitionTasks/Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-page="../CompetitionTasks/Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="../CompetitionTasks/Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+    @if (Model.CompetitionSystem.CompetitionTasks.Count == 0)
+    {
+        <p>
+            <i>No tasks found</i>
+        </p>
+    }
+    <hr />
+    <h4>Penalties</h4>
+    <p>
+        <a asp-page="../CompetitionPenalties/Create" asp-route-systemidentifier="@Model.CompetitionSystem.ID">Create New Penalty</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Penalty Name
+                </th>
+                <th>
+                    Points
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model.CompetitionSystem.CompetitionPenalties) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PenaltyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Points)
+                </td>
+                <td>
+                    <a asp-page="../CompetitionPenalties/Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-page="../CompetitionPenalties/Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="../CompetitionPenalties/Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+    @if (Model.CompetitionSystem.CompetitionPenalties.Count == 0)
+    {
+        <p>
+            <i>No penalties found</i>
+        </p>
+    }
+</div>

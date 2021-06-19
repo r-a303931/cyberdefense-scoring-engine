@@ -8,6 +8,17 @@
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<PublishTrimmed>true</PublishTrimmed>
 	<PublishReadyToRun>true</PublishReadyToRun>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	<RootNamespace>Clients.Windows.Main</RootNamespace>
+	<ApplicationManifest>WindowsClient.manifest</ApplicationManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\ClientDataManager\ClientService.csproj" />
+    <ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
+    <ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
+    <ProjectReference Include="..\..\Common\ClientWebInterface\ClientWebInterface.csproj" />
+    <ProjectReference Include="..\WindowsConstants\WindowsConstants.csproj" />
+  </ItemGroup>
 
 </Project>

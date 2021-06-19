@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Clients.Linux.Constants</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
+    <ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
+  </ItemGroup>
+
+</Project>

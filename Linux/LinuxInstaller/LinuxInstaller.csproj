@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+	<PublishSingleFile>true</PublishSingleFile>
+		<RootNamespace>Clients.Linux.Installer</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="LinuxClient" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="..\LinuxClient\bin\Release\net5.0\publish\LinuxClient" Link="Resources\LinuxClient">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
+		<ProjectReference Include="..\..\Common\ClientInstallerUtilities\ClientInstallerUtilities.csproj" />
+		<ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
+		<ProjectReference Include="..\LinuxConstants\LinuxConstants.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21216.1" />
+	  <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.21216.1" />
+	  <PackageReference Include="System.CommandLine.Rendering" Version="0.3.0-alpha.21216.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\" />
+	</ItemGroup>
+</Project>

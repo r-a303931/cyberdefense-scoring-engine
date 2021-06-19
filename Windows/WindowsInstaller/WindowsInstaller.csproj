@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+	<PublishSingleFile>true</PublishSingleFile>
+	<SelfContained>true</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<PublishTrimmed>true</PublishTrimmed>
+	<PublishReadyToRun>true</PublishReadyToRun>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	<RootNamespace>Clients.Windows.Installer</RootNamespace>
+	<ApplicationManifest>WindowsInstaller.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\README.url" />
+    <None Remove="Resources\ScoringReport.url" />
+    <None Remove="WindowsClient.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\WindowsClient\bin\Release\net5.0\publish\WindowsClient.exe" Link="Resources\WindowsClient.exe" />
+    <EmbeddedResource Include="Resources\README.url" />
+    <EmbeddedResource Include="Resources\ScoringReport.url" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
+    <ProjectReference Include="..\..\Common\ClientInstallerUtilities\ClientInstallerUtilities.csproj" />
+    <ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
+    <ProjectReference Include="..\WindowsConstants\WindowsConstants.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21216.1" />
+    <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.21216.1" />
+    <PackageReference Include="System.CommandLine.Rendering" Version="0.3.0-alpha.21216.1" />
+  </ItemGroup>
+
+</Project>

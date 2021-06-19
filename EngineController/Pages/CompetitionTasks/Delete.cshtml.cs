@@ -53,7 +53,7 @@ namespace EngineController.Pages.CompetitionTasks
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("../CompetitionSystems/Details", new { id = CompetitionTask.SystemIdentifier });
         }
     }
 }

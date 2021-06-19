@@ -29,5 +29,7 @@ namespace EngineController.Models
 				return taskPoints - penaltyPoints;
 			}
 		}
+
+		public ICollection<RegisteredVirtualMachines> RegisteredVirtualMachines { get; set; }
 	}
 }

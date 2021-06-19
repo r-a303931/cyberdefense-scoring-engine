@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EngineController.Models
@@ -17,7 +18,7 @@ namespace EngineController.Models
 		public string TaskName { get; set; }
 
 		[DisplayName("System Identifier")]
-		public string SystemIdentifier { get; set; }
+		public int SystemIdentifier { get; set; }
 
 		public int Points { get; set; }
 
@@ -26,5 +27,8 @@ namespace EngineController.Models
 		public ScriptType ScriptType { get; set; }
 		[DisplayName("Task Verification Script")]
 		public string ValidationScript { get; set; }
+
+		[JsonIgnore]
+		public CompetitionSystem CompetitionSystem;
 	}
 }

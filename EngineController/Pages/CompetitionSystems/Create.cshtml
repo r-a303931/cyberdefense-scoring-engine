@@ -1,0 +1,45 @@
+﻿@page
+@model EngineController.Pages.CompetitionSystems.CreateModel
+
+@{
+    ViewData["Title"] = "Configure System";
+}
+
+<h1>Create</h1>
+
+<h4>CompetitionSystem</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CompetitionSystem.SystemIdentifier" class="control-label"></label>
+                <input asp-for="CompetitionSystem.SystemIdentifier" class="form-control" />
+                <span asp-validation-for="CompetitionSystem.SystemIdentifier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompetitionSystem.ReadmeText" class="control-label"></label>
+                <textarea name="CompetitionSystem.ReadmeText"></textarea>
+                <span asp-validation-for="CompetitionSystem.ReadmeText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link rel="stylesheet" href="~/lib/simplemde/dist/simplemde.min.css" />
+    <script src="~/lib/simplemde/dist/simplemde.min.js"></script>
+    <script>
+        new SimpleMDE();
+    </script>
+}

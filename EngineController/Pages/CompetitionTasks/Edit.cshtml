@@ -18,15 +18,11 @@
         <form method="post" id="edit-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="CompetitionTask.ID" />
+            <input type="hidden" asp-for="CompetitionTask.SystemIdentifier" />
             <div class="form-group">
                 <label asp-for="CompetitionTask.TaskName" class="control-label"></label>
                 <input asp-for="CompetitionTask.TaskName" class="form-control" />
                 <span asp-validation-for="CompetitionTask.TaskName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CompetitionTask.SystemIdentifier" class="control-label"></label>
-                <input asp-for="CompetitionTask.SystemIdentifier" class="form-control" />
-                <span asp-validation-for="CompetitionTask.SystemIdentifier" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CompetitionTask.Points" class="control-label"></label>
@@ -52,7 +48,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="../CompetitionSystems/Details" asp-route-id="@Model.CompetitionTask.SystemIdentifier">Back to List</a>
 </div>
 
 @section Scripts {

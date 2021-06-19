@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace LinuxClient
+namespace Clients.Linux.Main
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Console.WriteLine("Hello World!");
         }

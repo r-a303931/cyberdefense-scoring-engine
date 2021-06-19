@@ -44,7 +44,7 @@
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.CompetitionTask.ID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="../CompetitionSystems/Details" asp-route-id="@Model.CompetitionTask.SystemIdentifier">Back to List</a>
 </div>
 
 @section Scripts {

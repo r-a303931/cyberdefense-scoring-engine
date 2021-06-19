@@ -7,7 +7,7 @@ namespace EngineController.Models
 {
 	public enum ScriptType
 	{
-		Lua = 0,
-		Python = 1,
+		Python = 0,
+		Lua = 1,
 	}
 }

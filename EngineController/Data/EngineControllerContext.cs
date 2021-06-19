@@ -25,13 +25,15 @@ namespace EngineController.Data
         public DbSet<Team> Teams { get; set; }
 
 
-        public DbSet<Readme> Readme { get; set; }
+        public DbSet<CompetitionSystem> CompetitionSystems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-            modelBuilder.Entity<CompetitionTask>().ToTable("CompetitionTasks");
-            modelBuilder.Entity<CompetitionPenalty>().ToTable("CompetitionPenalties");
+            modelBuilder.Entity<CompetitionTask>()
+                .ToTable("CompetitionTasks");
+            modelBuilder.Entity<CompetitionPenalty>()
+                .ToTable("CompetitionPenalties");
 
             modelBuilder.Entity<AppliedCompetitionPenalty>()
                 .ToTable("AppliedCompetitionPenalties")
@@ -39,11 +41,13 @@ namespace EngineController.Data
             modelBuilder.Entity<AppliedCompetitionPenalty>()
                 .HasOne(p => p.Team)
                 .WithMany()
-                .HasForeignKey(p => p.TeamID);
+                .HasForeignKey(p => p.TeamID)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<AppliedCompetitionPenalty>()
                 .HasOne(p => p.CompetitionPenalty)
                 .WithMany()
-                .HasForeignKey(p => p.CompetitionPenaltyID);
+                .HasForeignKey(p => p.CompetitionPenaltyID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CompletedCompetitionTask>()
                 .ToTable("CompletedCompetitionTasks")
@@ -51,11 +55,13 @@ namespace EngineController.Data
             modelBuilder.Entity<CompletedCompetitionTask>()
                 .HasOne(t => t.Team)
                 .WithMany()
-                .HasForeignKey(t => t.TeamID);
+                .HasForeignKey(t => t.TeamID)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<CompletedCompetitionTask>()
                 .HasOne(t => t.CompetitionTask)
                 .WithMany()
-                .HasForeignKey(t => t.CompetitionTaskID);
+                .HasForeignKey(t => t.CompetitionTaskID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Team>()
                 .ToTable("Teams");
@@ -66,9 +72,27 @@ namespace EngineController.Data
 				.HasMany(t => t.CompletedCompetitionTasks)
 				.WithOne();
 
-            modelBuilder.Entity<Readme>()
-                .ToTable("Readme")
-                .HasKey(r => r.ID);
+            modelBuilder.Entity<CompetitionSystem>()
+                .ToTable("CompetitionSystem");
+            modelBuilder.Entity<CompetitionSystem>()
+                .HasMany(s => s.CompetitionPenalties)
+                .WithOne()
+                .HasForeignKey(t => t.SystemIdentifier);
+            modelBuilder.Entity<CompetitionSystem>()
+                .HasMany(s => s.CompetitionTasks)
+                .WithOne()
+                .HasForeignKey(t => t.SystemIdentifier);
+
+            modelBuilder.Entity<RegisteredVirtualMachines>()
+                .ToTable("RegisteredVirtualMachines");
+            modelBuilder.Entity<RegisteredVirtualMachines>()
+                .HasOne(r => r.Team)
+                .WithMany()
+                .HasForeignKey(r => r.TeamID);
+            modelBuilder.Entity<RegisteredVirtualMachines>()
+                .HasOne(r => r.CompetitionSystem)
+                .WithMany()
+                .HasForeignKey(r => r.SystemIdentifier);
 		}
     }
 }

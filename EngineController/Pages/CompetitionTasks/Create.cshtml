@@ -16,15 +16,11 @@
     <div class="col-md-4">
         <form method="post" id="create-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NewTaskSystemIdentifier" />
             <div class="form-group">
                 <label asp-for="CompetitionTask.TaskName" class="control-label"></label>
                 <input asp-for="CompetitionTask.TaskName" class="form-control" />
                 <span asp-validation-for="CompetitionTask.TaskName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CompetitionTask.SystemIdentifier" class="control-label"></label>
-                <input asp-for="CompetitionTask.SystemIdentifier" class="form-control" />
-                <span asp-validation-for="CompetitionTask.SystemIdentifier" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CompetitionTask.Points" class="control-label"></label>
@@ -50,7 +46,7 @@
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="../CompetitionSystems/Details" asp-route-id="@Model.NewTaskSystemIdentifier">Back to List</a>
 </div>
 
 @section Scripts {
@@ -64,4 +60,10 @@
             input: 'task-input',
         })
     </script>
+
+    <style>
+        .form-group {
+            width: 100%;
+        }
+    </style>
 }

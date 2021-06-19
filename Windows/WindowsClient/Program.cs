@@ -5,17 +5,17 @@ using System.Net.Sockets;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace WindowsClient
+namespace Clients.Windows.Main
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             Console.WriteLine("Hello World!");
 
-            IPAddress address = new IPAddress(new byte[] { 127, 0, 0, 1 });
-            IPEndPoint endPoint = new IPEndPoint(address, 54248);
-            Socket listener = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            var address = new IPAddress(new byte[] { 127, 0, 0, 1 });
+            var endPoint = new IPEndPoint(address, 54248);
+            var listener = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             Console.WriteLine("Starting to bind...");
 

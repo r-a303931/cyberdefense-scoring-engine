@@ -17,6 +17,7 @@ FROM build AS publish
 RUN dotnet publish "EngineController.csproj" -c Release -o /app/publish
 
 FROM base AS final
+VOLUME /dbs
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "EngineController.dll"]

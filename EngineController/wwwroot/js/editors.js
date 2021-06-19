@@ -29,8 +29,8 @@ function setupEditor(options) {
 	var initialValue = options.initialValue || '';
 
 	var languages = [
+		'python',
 		'lua',
-		'python'
 	];
 	var editor;
 

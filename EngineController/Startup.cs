@@ -43,8 +43,9 @@ namespace EngineController
 		{
 			return new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
-				.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true)
 				.AddJsonFile($"appsettings.{Environment.OSVersion.Platform}.json", optional: true)
+				.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true)
+				.AddJsonFile($"appsettings.{Environment.OSVersion.Platform}.{hostingEnvironment.EnvironmentName}.json", optional: true)
 				.AddEnvironmentVariables()
 				.Build();
 		}

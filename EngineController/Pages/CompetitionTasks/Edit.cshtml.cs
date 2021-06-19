@@ -66,7 +66,7 @@ namespace EngineController.Pages.CompetitionTasks
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("../CompetitionSystems/Details", new { id = CompetitionTask.SystemIdentifier });
         }
 
         private bool CompetitionTaskExists(int id)

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>ClientCommon.Installer.Utilities</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClientData\ClientData.csproj" />
+    <ProjectReference Include="..\ClientModels\ClientModels.csproj" />
+  </ItemGroup>
+
+</Project>

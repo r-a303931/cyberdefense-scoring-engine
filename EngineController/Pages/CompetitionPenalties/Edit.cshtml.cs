@@ -13,9 +13,9 @@ namespace EngineController.Pages.CompetitionPenalties
 {
     public class EditModel : PageModel
     {
-        private readonly EngineController.Data.EngineControllerContext _context;
+        private readonly EngineControllerContext _context;
 
-        public EditModel(EngineController.Data.EngineControllerContext context)
+        public EditModel(EngineControllerContext context)
         {
             _context = context;
         }
@@ -66,7 +66,7 @@ namespace EngineController.Pages.CompetitionPenalties
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("../CompetitionSystems/Details", new { id = CompetitionPenalty.SystemIdentifier });
         }
 
         private bool CompetitionPenaltyExists(int id)
