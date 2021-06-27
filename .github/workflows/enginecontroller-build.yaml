@@ -39,5 +39,5 @@ jobs:
           context: .
           file: Server/EngineController/Dockerfile
           push: true
-          tags: cap-md089/cyberdefense-scoring-engine/enginecontroller:latest
+          tags: {{ env.REGISTRY }}/cap-md089/cyberdefense-scoring-engine/enginecontroller:latest
 
