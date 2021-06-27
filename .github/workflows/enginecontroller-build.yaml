@@ -39,5 +39,5 @@ jobs:
           context: .
           file: Server/EngineController/Dockerfile
           push: true
-          tag: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_NAME }}
 
