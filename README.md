@@ -55,7 +55,9 @@ To build and run a project and its dependencies, go into a project folder and ru
 To build a Docker image for the engine controller, from the project root run: `docker build -t enginecontroller -f Server/EngineController/Dockerfile .`
 Note: Do not run this command using WSL 2 on an NTFS drive!
 
-To run it, run `docker run -d -p 80:80 -p 3050 enginecontroller`
+To run it, run `docker run -d -p 80:80 -p 3050:3050 enginecontroller`
+
+Alternatively, you can use `docker run -d -p 80:80 -p 3050:3050 ghcr.io/cap-md089/cyberdefense-scoring-engine/enginecontroller:latest` to run the latest build from the master branch
 
 ### WindowsClient
 
@@ -64,9 +66,13 @@ Then, run `dotnet publish -c Release` inside Windows/WindowsInstaller
 
 The resulting `WindowsInstaller` executable should be located in either `Windows/WindowsInstaller/bin/Release/net5.0/windows-x64/publish` or `Windows/WindowsInstaller/bin/Release/net5.0/publish`
 
+This file is automatically built using GitHub actions, and can be accessed by going to 'Actions' -> 'Build Windows Installer' workflow, and then clicking on the latest build.
+
 ### LinuxClient
 
 First, publish the LinuxClient project using `dotnet publish -c Release` inside Linux/LinuxClient
 Then, run `dotnet publish -c Release` inside Linux/LinuxInstaller
 
 The resulting `LinuxInstaller` executable should be located in either `Linux/LinuxInstaller/bin/Release/net5.0/linux-x64/publish` or `Linux/LinuxInstaller/bin/Release/net5.0/publish`
+
+This file is automatically built using GitHub actions, and can be accessed by going to 'Actions' -> 'Build Linux Installer' workflow, and then clicking on the latest build.
