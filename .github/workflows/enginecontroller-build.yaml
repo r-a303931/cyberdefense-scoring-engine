@@ -38,4 +38,5 @@ jobs:
         with:
           context: .
           file: Server/EngineController/Dockerfile
+          push: true
 
