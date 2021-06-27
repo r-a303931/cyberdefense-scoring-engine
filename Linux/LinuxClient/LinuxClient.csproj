@@ -9,10 +9,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Common\ClientDataManager\ClientService.csproj" />
-		<ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
-		<ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
-		<ProjectReference Include="..\..\Common\ClientWebInterface\ClientWebInterface.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientDataManager\ClientService.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientData\ClientData.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientWebInterface\ClientWebInterface.csproj" />
 		<ProjectReference Include="..\LinuxConstants\LinuxConstants.csproj" />
 	</ItemGroup>
 

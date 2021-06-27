@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>dotnet-TcpWorkerService-EE525C15-D8D6-4B2B-BC73-79C0AE4CD703</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonUtilities\CommonUtilities.csproj" />
+    <ProjectReference Include="..\EngineControllerDataContext\EngineControllerData.csproj" />
+  </ItemGroup>
+</Project>

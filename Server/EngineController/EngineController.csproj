@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>4faf03ca-e723-4674-aebc-51eb0118a191</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MarkdownSharp" Version="2.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineControllerDataContext\EngineControllerData.csproj" />
+    <ProjectReference Include="..\TcpWorkerService\TcpWorkerService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\Teams\Delete - Copy - Copy.cshtml.cs">
+      <DependentUpon>Delete - Copy.cshtml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Teams\Delete - Copy.cshtml.cs">
+      <DependentUpon>Delete.cshtml.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

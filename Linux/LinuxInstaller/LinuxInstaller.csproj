@@ -17,9 +17,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Common\ClientData\ClientData.csproj" />
-		<ProjectReference Include="..\..\Common\ClientInstallerUtilities\ClientInstallerUtilities.csproj" />
-		<ProjectReference Include="..\..\Common\ClientModels\ClientModels.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientData\ClientData.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientInstallerUtilities\ClientInstallerUtilities.csproj" />
+		<ProjectReference Include="..\..\Common\CommonUtilities\CommonUtilities.csproj" />
+		<ProjectReference Include="..\..\Common\SimpleModels\Models.csproj" />
 		<ProjectReference Include="..\LinuxConstants\LinuxConstants.csproj" />
 	</ItemGroup>
 

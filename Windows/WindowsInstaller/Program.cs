@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
+using System.Diagnostics;
 using System.Reflection;
-using System.Threading.Tasks;
 
+using ClientCommon.Data.Config;
+using ClientCommon.Data.InformationContext;
 using ClientCommon.Installer.Utilities;
 using Clients.Windows.Constants;
 
@@ -14,21 +15,31 @@ namespace Clients.Windows.Installer
     /// </summary>
     public class Program
     {
-        static async void Main()
+        static void Main(string[] args)
         {
-            try
-            {
-                await Configuration.InstallFiles(Assembly.GetExecutingAssembly(), Constants.Constants.InstallPath, fileMappings: new Hashtable
+            IConfigurationManager configurationManager = new WindowsFileConfigurationManager();
+            IClientInformationContext informationContext = new TcpClientInformationClientContext(configurationManager);
+
+            CommandLine.Execute(
+                args,
+                Constants.Constants.InstallPath,
+                Assembly.GetExecutingAssembly(),
+                configurationManager,
+                informationContext,
+                new Hashtable
                 {
                     { "Clients.Windows.Installer.Resources.README.url", @"C:\Users\Public\Desktop\README.url" },
-                    { "Clients.Windows.Installer.Resources.ScoringReport.url", @"C:\Users\Public\Desktop\Scoring Report.url" }
-                }, cancellationToken: System.Threading.CancellationToken.None);
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine("There was an error!");
-            }
-            Console.WriteLine("Exiting");
+                    { "Clients.Windows.Installer.Resources.ScoringReport.url", @"C:\Users\Public\Desktop\ScoringReport.url" }
+                },
+                async () =>
+                {
+                    await Common.ProcessManagement.RunProcessAsync(Process.Start(
+                        "sc.exe",
+                        new string[] { "create", "CDSE", "start=", "auto", "error=", "normal", "binpath=", @"C:\CDSE\WindowsClient.exe" }
+                    ));
+                    // sc.exe create CDSE start= auto error= normal binpath= C:\CDSE\WindowsClient.exe
+                }
+            ).Wait();
         }
     }
 }

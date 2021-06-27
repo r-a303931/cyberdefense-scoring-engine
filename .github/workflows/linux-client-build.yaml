@@ -1,0 +1,25 @@
+name: Build Linux Installer
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - run: dotnet restore
+    - run: dotnet publish Linux/LinuxClient/LinuxClient.csproj --no-restore -c Release
+    - run: dotnet publish Linux/LinuxInstaller/LinuxInstaller.csproj --no-restore -c Release
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: cdse-client-installer
+        path: Linux/LinuxInstaller/bin/Release/net5.0/linux-x64/publish/LinuxInstaller

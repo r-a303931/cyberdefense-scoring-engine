@@ -15,7 +15,7 @@ This provides the baseline of a scoring engine which allows for management of in
 
 ## Project Architecture Overview
 
-1. Common/ClientCommonLibraries - libraries and services that are meant to be run in a platform independent way
+1. ClientCommon/ClientCommonLibraries - libraries and services that are meant to be run in a platform independent way
 	1. ClientData - data, interface, and configuration management
 	2. ClientInstallerUtilities - common utilities for installing to both Linux and Windows
 	3. ClientModels - data structures used in order to communicate with the controller and manage client services
@@ -25,7 +25,10 @@ This provides the baseline of a scoring engine which allows for management of in
 	1. Constants - stores constants that are necessary for installation and execution, such as installation folder paths
 	2. Client - the project that implements interfaces for ClientService, ClientWebInterface, and ClientData to allow for executing in platform dependent ways
 	3. Installer - programs to generate binaries to install the entirety of the service and user interfaces as well as configuring the services
-3. EngineController - the admin panel for the competition, which allows for setting the actual tasks and penalties as well as administering systems and teams
+3. Server - acts as the program which controls all of the clients as well as the admin control panel
+	1. EngineController - the admin panel for the competition, which allows for setting the actual tasks and penalties as well as administering systems and teams
+	2. EngineControllerData - provides models and database connections for the server
+	3. TcpWorkerService - acts as a server for the individual clients above
 
 ## Project Development
 
@@ -39,6 +42,8 @@ The following programs are needed for development:
 
 From the project root, run `dotnet restore` in the project root
 
+Docker is also a useful utility for developing the server programs
+
 ### Building and running
 
 To build and run a project and its dependencies, go into a project folder and run `dotnet build` or `dotnet run` to build or build and run respectively
@@ -47,10 +52,10 @@ To build and run a project and its dependencies, go into a project folder and ru
 
 ### EngineController
 
-To build a Docker image for the engine controller, from the project root run: `docker build -t enginecontroller -f EngineController/Dockerfile .`
+To build a Docker image for the engine controller, from the project root run: `docker build -t enginecontroller -f Server/EngineController/Dockerfile .`
 Note: Do not run this command using WSL 2 on an NTFS drive!
 
-To run it, run `docker run -d -p 80:80 enginecontroller`
+To run it, run `docker run -d -p 80:80 -p 3050 enginecontroller`
 
 ### WindowsClient
 

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>ClientCommon.Data</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonUtilities\CommonUtilities.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleModels\Models.csproj" />
+  </ItemGroup>
+
+</Project>

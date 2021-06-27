@@ -1,0 +1,135 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Common.Protocol
+{
+    public class StreamCompetitionProtocol : ICompetitionProtocol<string>
+    {
+        private readonly static Encoding encoding = Encoding.UTF8;
+
+        private readonly byte[] SyncBytes = encoding.GetBytes("COMPSYNC");
+
+        public event EventHandler OnDisconnect;
+
+        public Stream Stream { get; init; }
+        private List<EventHandler<string>> EventHandlers { get; } = new();
+        private Task Task { get; init; }
+        private CancellationTokenSource CancellationTokenSource { get; } = new();
+
+        /**
+         * Consumes the Stream provided
+         */
+        public StreamCompetitionProtocol(Stream stream)
+        {
+            Stream = stream;
+
+            Task = ListenOnStream();
+        }
+
+        void ICompetitionProtocol<string>.AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler)
+        {
+            EventHandlers.Add((source, msg) =>
+            {
+                messageHandler(source, msg as TMessageData);
+            });
+        }
+
+        async Task<TMessageData> ICompetitionProtocol<string>.SendMessage<TMessageData>(TMessageData messageData)
+        {
+            var data = messageData as string;
+            var bytes = encoding.GetBytes(data);
+            var lengthBytes = BitConverter.GetBytes(bytes.Length);
+
+            var finalBytes = new byte[SyncBytes.Length + lengthBytes.Length + bytes.Length];
+
+            Buffer.BlockCopy(SyncBytes, 0, finalBytes, 0, SyncBytes.Length);
+            Buffer.BlockCopy(lengthBytes, 0, finalBytes, SyncBytes.Length, lengthBytes.Length);
+            Buffer.BlockCopy(bytes, 0, finalBytes, SyncBytes.Length + lengthBytes.Length, bytes.Length);
+
+            await Stream.WriteAsync(finalBytes);
+
+            return messageData;
+        }
+
+        public Task GetSessionCompletionTask(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.Register(() => CancellationTokenSource.Cancel());
+            return Task;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            CancellationTokenSource.Cancel();
+
+            await Task;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+
+            CancellationTokenSource.Cancel();
+
+            Task.Wait();
+
+            Stream.Dispose();
+        }
+
+
+        private async Task ListenOnStream()
+        {
+            var buffer = new byte[SyncBytes.Length];
+
+            while (!CancellationTokenSource.IsCancellationRequested)
+            {
+                try
+                {
+                    for (var i = 0; i < SyncBytes.Length; i++)
+                    {
+                        buffer[i] = 0;
+                    }
+
+                    do
+                    {
+                        for (var i = 1; i < SyncBytes.Length; i++)
+                        {
+                            buffer[i - 1] = buffer[i];
+                        }
+
+                        buffer[SyncBytes.Length - 1] = await Stream.ReadByteAsync(CancellationTokenSource.Token);
+                    } while (!SyncBytes.SequenceEqual(buffer) && !CancellationTokenSource.IsCancellationRequested);
+
+                    var bufferLength = new byte[4];
+                    await Stream.ReadAsync(bufferLength.AsMemory(), CancellationTokenSource.Token);
+                    var packetLength = BitConverter.ToInt32(bufferLength.AsSpan());
+
+                    var packet = new byte[packetLength];
+                    await Stream.ReadAsync(packet.AsMemory(), CancellationTokenSource.Token);
+
+                    var value = encoding.GetString(packet);
+
+                    foreach (var handler in EventHandlers)
+                    {
+                        handler(null, value);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e is InvalidOperationException or TaskCanceledException or OperationCanceledException)
+                    {
+                        OnDisconnect?.Invoke(null, null);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+    }
+}

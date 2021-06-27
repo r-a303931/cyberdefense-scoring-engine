@@ -1,0 +1,25 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - run: dotnet restore
+    - run: dotnet publish Windows/WindowsClient/WindowsClient.csproj --no-restore -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishReadyToRun=false
+    - run: dotnet publish Windows/WindowsInstaller/WindowsInstaller.csproj --no-restore -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishReadyToRun=false
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: CDSEClientInstaller.exe
+        path: Windows/WindowsInstaller/bin/Release/net5.0/win-x64/publish/WindowsInstaller.exe
