@@ -29,10 +29,10 @@ namespace EngineController.Pages.Teams
             }
 
             Team = await _context.Teams
-				.Include(t => t.AppliedCompetitionPenalties)
-				.ThenInclude(p => p.CompetitionPenalty)
-				.Include(t => t.CompletedCompetitionTasks)
-				.ThenInclude(p => p.CompetitionTask)
+                .Include(t => t.AppliedCompetitionPenalties)
+                .ThenInclude(p => p.CompetitionPenalty)
+                .Include(t => t.CompletedCompetitionTasks)
+                .ThenInclude(p => p.CompetitionTask)
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Team == null)

@@ -9,26 +9,26 @@ using System.Threading.Tasks;
 
 namespace EngineController.Models
 {
-	public class CompetitionPenalty
-	{
-		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-		public int ID { get; set; }
+    public class CompetitionPenalty
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
 
-		[DisplayName("Name")]
-		public string PenaltyName { get; set; }
+        [DisplayName("Name")]
+        public string PenaltyName { get; set; }
 
-		[DisplayName("System Identifier")]
-		public int SystemIdentifier { get; set; }
+        [DisplayName("System Identifier")]
+        public int SystemIdentifier { get; set; }
 
-		public int Points { get; set; }
+        public int Points { get; set; }
 
 
-		[DisplayName("Script Type")]
-		public ScriptType ScriptType { get; set; }
-		[DisplayName("Penalty Verification Script")]
-		public string PenaltyScript { get; set; }
+        [DisplayName("Script Type")]
+        public ScriptType ScriptType { get; set; }
+        [DisplayName("Penalty Verification Script")]
+        public string PenaltyScript { get; set; }
 
-		[JsonIgnore]
-		public CompetitionSystem CompetitionSystem;
-	}
+        [JsonIgnore]
+        public CompetitionSystem CompetitionSystem;
+    }
 }

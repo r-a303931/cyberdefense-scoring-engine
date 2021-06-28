@@ -40,7 +40,16 @@ The following programs are needed for development:
 - .NET 5 SDK
 - Either Visual Studio or Visual Studio Code
 
-From the project root, run `dotnet restore` in the project root
+In the repository, run:
+
+```
+# Install dependencies
+dotnet restore
+# Install the dotnet-format utility to keep files formatted consistently
+dotnet tool install -g dotnet-format
+# Install the pre-commit hook
+git config core.hooksPath hooks
+```
 
 Docker is also a useful utility for developing the server programs
 

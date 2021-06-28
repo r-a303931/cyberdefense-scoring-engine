@@ -58,13 +58,13 @@ namespace EngineController.Pages.Teams
             if (Team != null)
             {
                 foreach (var penalty in Team.AppliedCompetitionPenalties)
-				{
+                {
                     Team.AppliedCompetitionPenalties.Remove(penalty);
-				}
+                }
                 foreach (var task in Team.CompletedCompetitionTasks)
-				{
+                {
                     Team.CompletedCompetitionTasks.Remove(task);
-				}
+                }
 
                 await _context.SaveChangesAsync();
             }

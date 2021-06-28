@@ -9,7 +9,7 @@ namespace EngineController.Data
 {
     public class EngineControllerContext : DbContext
     {
-        public EngineControllerContext (DbContextOptions<EngineControllerContext> options)
+        public EngineControllerContext(DbContextOptions<EngineControllerContext> options)
             : base(options)
         {
         }
@@ -31,7 +31,7 @@ namespace EngineController.Data
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
+        {
             modelBuilder.Entity<CompetitionTask>()
                 .ToTable("CompetitionTasks");
             modelBuilder.Entity<CompetitionPenalty>()
@@ -70,9 +70,9 @@ namespace EngineController.Data
             modelBuilder.Entity<Team>()
                 .HasMany(t => t.AppliedCompetitionPenalties)
                 .WithOne();
-			modelBuilder.Entity<Team>()
-				.HasMany(t => t.CompletedCompetitionTasks)
-				.WithOne();
+            modelBuilder.Entity<Team>()
+                .HasMany(t => t.CompletedCompetitionTasks)
+                .WithOne();
 
             modelBuilder.Entity<CompetitionSystem>()
                 .ToTable("CompetitionSystem");
@@ -95,6 +95,6 @@ namespace EngineController.Data
                 .HasOne(r => r.CompetitionSystem)
                 .WithMany()
                 .HasForeignKey(r => r.SystemIdentifier);
-		}
+        }
     }
 }

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" "*.tsx" | sed 's| |\\ |g')
+dotnet format
+echo "$FILES" | xargs git add

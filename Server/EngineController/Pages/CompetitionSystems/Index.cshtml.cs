@@ -19,7 +19,7 @@ namespace EngineController.Pages.CompetitionSystems
             _context = context;
         }
 
-        public IList<CompetitionSystem> CompetitionSystem { get;set; }
+        public IList<CompetitionSystem> CompetitionSystem { get; set; }
 
         public async Task OnGetAsync()
         {

@@ -19,15 +19,15 @@ namespace EngineController.Pages.Teams
             _context = context;
         }
 
-        public IList<Team> Team { get;set; }
+        public IList<Team> Team { get; set; }
 
         public async Task OnGetAsync()
         {
             Team = await _context.Teams
-				.Include(t => t.AppliedCompetitionPenalties)
-				.ThenInclude(p => p.CompetitionPenalty)
-				.Include(t => t.CompletedCompetitionTasks)
-				.ThenInclude(p => p.CompetitionTask)
+                .Include(t => t.AppliedCompetitionPenalties)
+                .ThenInclude(p => p.CompetitionPenalty)
+                .Include(t => t.CompletedCompetitionTasks)
+                .ThenInclude(p => p.CompetitionTask)
                 .ToListAsync();
         }
     }
