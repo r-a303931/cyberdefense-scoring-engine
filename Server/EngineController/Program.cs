@@ -4,9 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EngineController
 {
@@ -37,7 +35,7 @@ namespace EngineController
 			try
 			{
 				var context = services.GetRequiredService<Data.EngineControllerContext>();
-				context.Database.EnsureCreated();
+				context.Database.Migrate();
 			}
 			catch (Exception ex)
 			{

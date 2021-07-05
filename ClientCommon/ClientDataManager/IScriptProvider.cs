@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClientService
+namespace ClientCommon.ClientService
 {
-    interface IScriptProvider
+    public interface IScriptProvider
     {
 #region User utility functions
         bool UserExists(string username);

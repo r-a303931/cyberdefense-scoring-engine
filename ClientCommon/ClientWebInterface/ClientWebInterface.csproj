@@ -24,6 +24,13 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonUtilities\CommonUtilities.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleModels\Models.csproj" />
+    <ProjectReference Include="..\ClientDataManager\ClientService.csproj" />
+    <ProjectReference Include="..\ClientData\ClientData.csproj" />
+  </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

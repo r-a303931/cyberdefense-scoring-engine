@@ -8,8 +8,7 @@ namespace EngineController.Models
     public class RegisteredVirtualMachine
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
+        public Guid VmId { get; set; }
 
         [JsonIgnore]
         public int TeamID { get; set; }

@@ -54,161 +54,222 @@ namespace EngineController.Workers.TcpConnectionService
             using var client = _client;
             using var protocol = new JsonCompetitionProtocol(client, _logger);
 
-            int teamID;
-            int SystemIdentifier;
+            protocol.AddMessageHandler<Requests.GetCompetitionSystems>(async (source, msg) =>
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetService<EngineControllerContext>();
 
-            var loginMessage = await protocol.GetMessageAsync<Login>(cancellationToken: cancellationToken);
+                    var systems = await context.CompetitionSystems.ToListAsync();
+
+                    await protocol.SendMessage(new CompetitionSystemsList
+                    {
+                        ResponseGuid = msg.ResponseGuid,
+                        CompetitionSystems = from competitionSystem
+                                             in systems
+                                             select new CompetitionSystem
+                                             {
+                                                 CompetitionPenalties = from penalty
+                                                                        in competitionSystem.CompetitionPenalties
+                                                                        select new CompetitionPenalty
+                                                                        {
+                                                                            ID = penalty.ID,
+                                                                            Points = penalty.Points,
+                                                                            ScriptType = (ScriptType)penalty.ScriptType,
+                                                                            SystemIdentifier = penalty.SystemIdentifier,
+                                                                            PenaltyName = penalty.PenaltyName,
+                                                                            PenaltyScript = penalty.PenaltyScript
+                                                                        },
+                                                 CompetitionTasks = from task
+                                                                    in competitionSystem.CompetitionTasks
+                                                                    select new CompetitionTask
+                                                                    {
+                                                                        ID = task.ID,
+                                                                        Points = task.Points,
+                                                                        ScriptType = (ScriptType)task.ScriptType,
+                                                                        SystemIdentifier = task.SystemIdentifier,
+                                                                        TaskName = task.TaskName,
+                                                                        ValidationScript = task.ValidationScript
+                                                                    },
+                                                 ID = competitionSystem.ID,
+                                                 ReadmeText = competitionSystem.ReadmeText,
+                                                 SystemIdentifier = competitionSystem.SystemIdentifier
+                                             }
+                    });
+                }
+                catch (Exception e)
+                {
+                    await protocol.SendMessage(new CompetitionError
+                    {
+                        ResponseGuid = msg.ResponseGuid,
+                        ErrorMessage = $"Could not get systems: {e.Message}"
+                    });
+
+                    _logger.LogError($"Could not get systems: {e.Message}\n{e.StackTrace}");
+                }
+            });
+
+            protocol.AddMessageHandler<Requests.GetTeams>(async (source, msg) =>
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetService<EngineControllerContext>();
+
+                    var teams = await context.Teams
+                        .Include(t => t.AppliedCompetitionPenalties)
+                        .ThenInclude(p => p.CompetitionPenalty)
+                        .Include(t => t.CompletedCompetitionTasks)
+                        .ThenInclude(t => t.CompetitionTask)
+                        .ToListAsync();
+
+                    await protocol.SendMessage(new TeamsList
+                    {
+                        ResponseGuid = msg.ResponseGuid,
+                        Teams = from team
+                                in teams
+                                select new Team
+                                {
+                                    AppliedCompetitionPenalties = from penalty
+                                                                  in team.AppliedCompetitionPenalties
+                                                                  select new AppliedCompetitionPenalty
+                                                                  {
+                                                                      CompetitionPenalty = new CompetitionPenalty
+                                                                      {
+                                                                          ID = penalty.CompetitionPenalty.ID,
+                                                                          PenaltyName = penalty.CompetitionPenalty.PenaltyName,
+                                                                          PenaltyScript = penalty.CompetitionPenalty.PenaltyScript,
+                                                                          Points = penalty.CompetitionPenalty.Points,
+                                                                          ScriptType = (ScriptType)penalty.CompetitionPenalty.ScriptType,
+                                                                          SystemIdentifier = penalty.CompetitionPenalty.SystemIdentifier
+                                                                      },
+                                                                      CompetitionPenaltyID = penalty.CompetitionPenaltyID,
+                                                                      TeamID = team.ID
+                                                                  },
+                                    CompletedCompetitionTasks = from task
+                                                                in team.CompletedCompetitionTasks
+                                                                select new CompletedCompetitionTask
+                                                                {
+                                                                    CompetitionTask = new CompetitionTask
+                                                                    {
+                                                                        ID = task.CompetitionTaskID,
+                                                                        Points = task.CompetitionTask.Points,
+                                                                        ScriptType = (ScriptType)task.CompetitionTask.ScriptType,
+                                                                        SystemIdentifier = task.CompetitionTask.SystemIdentifier,
+                                                                        TaskName = task.CompetitionTask.TaskName,
+                                                                        ValidationScript = task.CompetitionTask.ValidationScript
+                                                                    },
+                                                                    CompetitionTaskID = task.CompetitionTaskID,
+                                                                    TeamID = team.ID
+                                                                },
+                                    ID = team.ID,
+                                    Name = team.Name
+                                }
+                    });
+                }
+                catch (Exception e)
+                {
+                    await protocol.SendMessage(new CompetitionError
+                    {
+                        ResponseGuid = msg.ResponseGuid,
+                        ErrorMessage = $"Could not get teams: {e.Message}"
+                    });
+
+                    _logger.LogError($"Could not get teams: {e.Message}\n{e.StackTrace}");
+                }
+            });
+
+            // These are assigned later on
+            int teamID = 0;
+            int SystemIdentifier = 0;
+
+            var firstMessage = await await Task.WhenAny(
+                protocol.GetMessageAsync<Login>(-1, cancellationToken: cancellationToken)
+                    .ContinueWith(lm => (CompetitionMessage)lm.Result),
+                protocol.GetMessageAsync<RegisterVM>(-1, cancellationToken: cancellationToken)
+                    .ContinueWith(lm => (CompetitionMessage)lm.Result)
+            );
+
+            Models.RegisteredVirtualMachine teamVmRegistration = null;
 
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<EngineControllerContext>();
 
-                var teamVmRegistration = await context.RegisteredVirtualMachines.FirstOrDefaultAsync(rvm => rvm.Id == loginMessage.VmId, cancellationToken);
+                if (firstMessage is Login loginMessage)
+                {
+                    teamVmRegistration = await context.RegisteredVirtualMachines.FirstOrDefaultAsync(rvm => rvm.VmId == loginMessage.VmId, cancellationToken);
 
-                if (teamVmRegistration is null)
+                    if (teamVmRegistration is null)
+                    {
+                        await protocol.SendMessage(new CompetitionError
+                        {
+                            ResponseGuid = loginMessage.ResponseGuid,
+                            ErrorMessage = "Could not find VM registration"
+                        }, cancellationToken);
+
+                        return;
+                    }
+
+                    teamID = teamVmRegistration.TeamID;
+                    SystemIdentifier = teamVmRegistration.SystemIdentifier;
+
+                    teamVmRegistration.IsConnectedNow = true;
+                    await context.SaveChangesAsync(cancellationToken);
+
+                    await protocol.SendMessage(new CommandAcknowledge {
+                        ResponseGuid = loginMessage.ResponseGuid
+                    }, cancellationToken);
+                }
+                else if (firstMessage is RegisterVM rvm)
+                {
+                    teamVmRegistration = new Models.RegisteredVirtualMachine
+                    {
+                        VmId = rvm.Id,
+                        SystemIdentifier = rvm.SystemIdentifier,
+                        IsConnectedNow = true,
+                        LastCheckIn = DateTime.Now,
+                        TeamID = rvm.TeamId
+                    };
+
+                    teamID = rvm.TeamId;
+                    SystemIdentifier = rvm.SystemIdentifier;
+
+                    try
+                    {
+                        await context.RegisteredVirtualMachines.AddAsync(teamVmRegistration, cancellationToken);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await protocol.SendMessage(new CommandAcknowledge {
+                            ResponseGuid = rvm.ResponseGuid
+                        }, cancellationToken);
+                    } 
+                    catch (Exception e)
+                    {
+                        await protocol.SendMessage(new CompetitionError
+                        {
+                            ResponseGuid = rvm.ResponseGuid,
+                            ErrorMessage = "Could not register VM: " + e.Message
+                        }, cancellationToken);
+                        _logger.LogError(e, "Could not register VM");
+
+                        return;
+                    }
+                }
+                else
                 {
                     await protocol.SendMessage(new CompetitionError
                     {
-                        ResponseGuid = loginMessage.ResponseGuid,
-                        ErrorMessage = "Could not find VM registration"
+                        ResponseGuid = firstMessage.ResponseGuid,
+                        ErrorMessage = "Invalid message sent"
                     });
+                    return;
                 }
-
-                teamID = teamVmRegistration.TeamID;
-                SystemIdentifier = teamVmRegistration.SystemIdentifier;
-
-                teamVmRegistration.IsConnectedNow = true;
-                await context.SaveChangesAsync(cancellationToken);
             }
 
             try
             {
-                protocol.AddMessageHandler<Requests.GetCompetitionSystems>(async (source, msg) =>
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var context = scope.ServiceProvider.GetService<EngineControllerContext>();
-
-                    try
-                    {
-                        var systems = await context.CompetitionSystems.ToListAsync();
-
-                        await protocol.SendMessage(new CompetitionSystemsList
-                        {
-                            ResponseGuid = msg.ResponseGuid,
-                            CompetitionSystems = from competitionSystem
-                                                 in systems
-                                                 select new CompetitionSystem
-                                                 {
-                                                     CompetitionPenalties = from penalty
-                                                                            in competitionSystem.CompetitionPenalties
-                                                                            select new CompetitionPenalty
-                                                                            {
-                                                                                ID = penalty.ID,
-                                                                                Points = penalty.Points,
-                                                                                ScriptType = (ScriptType)penalty.ScriptType,
-                                                                                SystemIdentifier = penalty.SystemIdentifier,
-                                                                                PenaltyName = penalty.PenaltyName,
-                                                                                PenaltyScript = penalty.PenaltyScript
-                                                                            },
-                                                     CompetitionTasks = from task
-                                                                        in competitionSystem.CompetitionTasks
-                                                                        select new CompetitionTask
-                                                                        {
-                                                                            ID = task.ID,
-                                                                            Points = task.Points,
-                                                                            ScriptType = (ScriptType)task.ScriptType,
-                                                                            SystemIdentifier = task.SystemIdentifier,
-                                                                            TaskName = task.TaskName,
-                                                                            ValidationScript = task.ValidationScript
-                                                                        },
-                                                     ID = competitionSystem.ID,
-                                                     ReadmeText = competitionSystem.ReadmeText,
-                                                     SystemIdentifier = competitionSystem.SystemIdentifier
-                                                 }
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        await protocol.SendMessage(new CompetitionError
-                        {
-                            ResponseGuid = msg.ResponseGuid,
-                            ErrorMessage = $"Could not get systems: {e.Message}"
-                        });
-
-                        _logger.LogError($"Could not get systems: {e.Message}\n{e.StackTrace}");
-                    }
-                });
-
-                protocol.AddMessageHandler<Requests.GetTeams>(async (source, msg) =>
-                {
-                    try
-                    {
-                        using var scope = _serviceProvider.CreateScope();
-                        var context = scope.ServiceProvider.GetService<EngineControllerContext>();
-
-                        var teams = await context.Teams
-                            .Include(t => t.AppliedCompetitionPenalties)
-                            .ThenInclude(p => p.CompetitionPenalty)
-                            .Include(t => t.CompletedCompetitionTasks)
-                            .ThenInclude(t => t.CompetitionTask)
-                            .ToListAsync();
-
-                        await protocol.SendMessage(new TeamsList
-                        {
-                            ResponseGuid = msg.ResponseGuid,
-                            Teams = from team
-                                    in teams
-                                    select new Team
-                                    {
-                                        AppliedCompetitionPenalties = from penalty
-                                                                      in team.AppliedCompetitionPenalties
-                                                                      select new AppliedCompetitionPenalty
-                                                                      {
-                                                                          CompetitionPenalty = new CompetitionPenalty
-                                                                          {
-                                                                              ID = penalty.CompetitionPenalty.ID,
-                                                                              PenaltyName = penalty.CompetitionPenalty.PenaltyName,
-                                                                              PenaltyScript = penalty.CompetitionPenalty.PenaltyScript,
-                                                                              Points = penalty.CompetitionPenalty.Points,
-                                                                              ScriptType = (ScriptType)penalty.CompetitionPenalty.ScriptType,
-                                                                              SystemIdentifier = penalty.CompetitionPenalty.SystemIdentifier
-                                                                          },
-                                                                          CompetitionPenaltyID = penalty.CompetitionPenaltyID,
-                                                                          TeamID = team.ID
-                                                                      },
-                                        CompletedCompetitionTasks = from task
-                                                                    in team.CompletedCompetitionTasks
-                                                                    select new CompletedCompetitionTask
-                                                                    {
-                                                                        CompetitionTask = new CompetitionTask
-                                                                        {
-                                                                            ID = task.CompetitionTaskID,
-                                                                            Points = task.CompetitionTask.Points,
-                                                                            ScriptType = (ScriptType)task.CompetitionTask.ScriptType,
-                                                                            SystemIdentifier = task.CompetitionTask.SystemIdentifier,
-                                                                            TaskName = task.CompetitionTask.TaskName,
-                                                                            ValidationScript = task.CompetitionTask.ValidationScript
-                                                                        },
-                                                                        CompetitionTaskID = task.CompetitionTaskID,
-                                                                        TeamID = team.ID
-                                                                    },
-                                        ID = team.ID,
-                                        Name = team.Name
-                                    }
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        await protocol.SendMessage(new CompetitionError
-                        {
-                            ResponseGuid = msg.ResponseGuid,
-                            ErrorMessage = $"Could not get teams: {e.Message}"
-                        });
-
-                        _logger.LogError($"Could not get teams: {e.Message}\n{e.StackTrace}");
-                    }
-                });
-
                 protocol.AddMessageHandler<SetCompletedTasks>(async (source, msg) =>
                 {
                     try
@@ -332,9 +393,9 @@ namespace EngineController.Workers.TcpConnectionService
             {
                 await protocol.SendMessage(new CompetitionError
                 {
-                    ResponseGuid = loginMessage.ResponseGuid,
+                    ResponseGuid = firstMessage.ResponseGuid,
                     ErrorMessage = $"Could not login: {e.Message}"
-                });
+                }, cancellationToken);
 
                 _logger.LogError($"Could not login: {e.Message}\n{e.StackTrace}");
             }
@@ -343,8 +404,8 @@ namespace EngineController.Workers.TcpConnectionService
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetService<EngineControllerContext>();
 
-                var teamVmRegistration = await context.RegisteredVirtualMachines.FirstOrDefaultAsync(rvm => rvm.Id == loginMessage.VmId, cancellationToken);
-                teamVmRegistration.IsConnectedNow = false;
+                var vmRegistration = await context.RegisteredVirtualMachines.FirstOrDefaultAsync(rvm => rvm.VmId == teamVmRegistration.VmId, cancellationToken);
+                vmRegistration.IsConnectedNow = false;
                 await context.SaveChangesAsync(cancellationToken);
             }
         }

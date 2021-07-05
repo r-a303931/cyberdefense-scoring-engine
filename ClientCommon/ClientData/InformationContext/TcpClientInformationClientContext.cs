@@ -54,7 +54,7 @@ namespace ClientCommon.Data.InformationContext
 
         public async Task<IEnumerable<CompetitionSystem>> GetAvailableSystemsAsync(CancellationToken cancellationToken = default)
         {
-            var msg = await CompetitionProtocol.SendMessage(new Requests.GetCompetitionSystems { });
+            var msg = await CompetitionProtocol.SendMessage(new Requests.GetCompetitionSystems { }, cancellationToken);
             var result = await CompetitionProtocol.GetResponseAsync<CompetitionSystemsList, Requests.GetCompetitionSystems>(msg, cancellationToken: cancellationToken);
 
             return result.CompetitionSystems;
@@ -74,7 +74,7 @@ namespace ClientCommon.Data.InformationContext
 
         public async Task<IEnumerable<Team>> GetTeamsAsync(CancellationToken cancellationToken = default)
         {
-            var msg = await CompetitionProtocol.SendMessage(new Requests.GetTeams { });
+            var msg = await CompetitionProtocol.SendMessage(new Requests.GetTeams { }, cancellationToken);
             var result = await CompetitionProtocol.GetResponseAsync<TeamsList, Requests.GetTeams>(msg, cancellationToken: cancellationToken);
 
             return result.Teams;
@@ -103,7 +103,7 @@ namespace ClientCommon.Data.InformationContext
                     TaskIds = from task
                               in tasks
                               select task.ID
-                });
+                }, cancellationToken);
 
                 await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
             }
@@ -124,7 +124,7 @@ namespace ClientCommon.Data.InformationContext
                     PenaltyIds = from penalty
                                  in penalties
                                  select penalty.ID
-                });
+                }, cancellationToken);
 
                 await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
             }
@@ -147,7 +147,7 @@ namespace ClientCommon.Data.InformationContext
                     Id = config.SystemGUID,
                     SystemIdentifier = sysId,
                     TeamId = teamID
-                });
+                }, cancellationToken);
 
                 await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
             }
@@ -168,7 +168,7 @@ namespace ClientCommon.Data.InformationContext
                     Id = config.SystemGUID,
                     SystemIdentifier = sysId,
                     TeamId = teamID
-                });
+                }, cancellationToken);
 
                 await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
             }
@@ -185,7 +185,7 @@ namespace ClientCommon.Data.InformationContext
             var msg = await CompetitionProtocol.SendMessage(new Login
             {
                 VmId = config.SystemGUID
-            });
+            }, cancellationToken);
 
             await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
         }

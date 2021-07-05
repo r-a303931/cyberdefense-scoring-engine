@@ -17,9 +17,8 @@ namespace Common.Protocol
     {
         public ICompetitionProtocol<string> UnderlyingProtocol;
         public event EventHandler? OnDisconnect;
-        private readonly LinkedList<InternalMessageHandler> MessageHandlers = new();
+        private readonly List<InternalMessageHandler> MessageHandlers = new();
         private readonly ILogger? _logger;
-        private readonly List<string> CompetitionMessages = new();
 
         public JsonCompetitionProtocol(TcpClient socket, ILogger? logger = null)
             : this(new StreamCompetitionProtocol(socket.GetStream()), logger)
@@ -36,11 +35,6 @@ namespace Common.Protocol
                 foreach (var handler in MessageHandlers)
                 {
                     accepted = handler.TryAccept(message) || accepted;
-                }
-
-                if (!accepted)
-                {
-                    CompetitionMessages.Add(message);
                 }
             });
 
@@ -61,12 +55,30 @@ namespace Common.Protocol
             });
         }
 
-        public Task GetSessionCompletionTask(CancellationToken cancellationToken = default) => UnderlyingProtocol.GetSessionCompletionTask(cancellationToken);
+        public async Task GetSessionCompletionTask(CancellationToken cancellationToken = default)
+        {
+            var task = UnderlyingProtocol.GetSessionCompletionTask(cancellationToken);
 
-        public void AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler)
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.WhenAny(
+                    Task.Delay(500, cancellationToken).ContinueWith(res => 0),
+                    task.ContinueWith(res => 0)
+                );
+
+                if (task.IsCompleted)
+                {
+                    return;
+                }
+
+                await SendHeartbeat(cancellationToken);
+            }
+        }
+
+        public int AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler)
             where TMessageData : IJsonProtocolMessage
         {
-            MessageHandlers.AddLast(new InternalMessageHandler(
+            MessageHandlers.Add(new InternalMessageHandler(
                 typeof(TMessageData),
                 (source, param) =>
                 {
@@ -74,6 +86,13 @@ namespace Common.Protocol
                 },
                 (obj) => true
             ));
+
+            return MessageHandlers.Count - 1;
+        }
+
+        public void RemoveMessageHandler(int messageHandlerId)
+        {
+            MessageHandlers.RemoveAt(messageHandlerId);
         }
 
         public Action AddOnceMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler, Func<TMessageData, bool>? acceptCondition)
@@ -99,7 +118,7 @@ namespace Common.Protocol
             );
             handlerPointer = handler;
 
-            MessageHandlers.AddLast(handler);
+            MessageHandlers.Add(handler);
 
             return () =>
             {
@@ -116,7 +135,10 @@ namespace Common.Protocol
             using var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
             combinedToken.Token.Register(() => tcs.TrySetCanceled());
 
-            combinedToken.CancelAfter(timeout);
+            if (timeout > 0)
+            {
+                combinedToken.CancelAfter(timeout);
+            }
 
             AddOnceMessageHandler((source, param) =>
             {
@@ -155,7 +177,7 @@ namespace Common.Protocol
             return GetResponseAsync<CommandAcknowledge, TMessageData>(message, timeout, cancellationToken);
         }
 
-        public async Task<TMessageData> SendMessage<TMessageData>(TMessageData messageData)
+        public async Task<TMessageData> SendMessage<TMessageData>(TMessageData messageData, CancellationToken cancellationToken = default)
         {
             var prettyJson = JsonSerializer.Serialize(messageData, new JsonSerializerOptions
             {
@@ -166,7 +188,7 @@ namespace Common.Protocol
 
             var messageJson = JsonSerializer.Serialize(messageData);
 
-            await UnderlyingProtocol.SendMessage(messageJson);
+            await UnderlyingProtocol.SendMessage(messageJson, cancellationToken);
 
             return messageData;
         }
@@ -184,7 +206,7 @@ namespace Common.Protocol
 
         public async Task<HeartbeatAcknowledge> SendHeartbeat(CancellationToken cancellationToken = default)
         {
-            var msg = await SendMessage(new Heartbeat { });
+            var msg = await SendMessage(new Heartbeat { }, cancellationToken);
 
             return await GetResponseAsync<HeartbeatAcknowledge, Heartbeat>(msg, cancellationToken: cancellationToken);
         }

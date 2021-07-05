@@ -31,15 +31,22 @@ namespace Common.Protocol
             Task = ListenOnStream();
         }
 
-        void ICompetitionProtocol<string>.AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler)
+        int ICompetitionProtocol<string>.AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler)
         {
             EventHandlers.Add((source, msg) =>
             {
                 messageHandler(source, msg as TMessageData);
             });
+
+            return EventHandlers.Count - 1;
         }
 
-        async Task<TMessageData> ICompetitionProtocol<string>.SendMessage<TMessageData>(TMessageData messageData)
+        public void RemoveMessageHandler(int id)
+        {
+            EventHandlers.RemoveAt(id);
+        }
+
+        async Task<TMessageData> ICompetitionProtocol<string>.SendMessage<TMessageData>(TMessageData messageData, CancellationToken cancellationToken)
         {
             var data = messageData as string;
             var bytes = encoding.GetBytes(data);
@@ -51,7 +58,7 @@ namespace Common.Protocol
             Buffer.BlockCopy(lengthBytes, 0, finalBytes, SyncBytes.Length, lengthBytes.Length);
             Buffer.BlockCopy(bytes, 0, finalBytes, SyncBytes.Length + lengthBytes.Length, bytes.Length);
 
-            await Stream.WriteAsync(finalBytes);
+            await Stream.WriteAsync(finalBytes, cancellationToken);
 
             return messageData;
         }

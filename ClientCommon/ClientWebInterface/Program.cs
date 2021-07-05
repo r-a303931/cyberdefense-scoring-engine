@@ -1,26 +1,27 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
+using ClientCommon.ClientService;
+using ClientCommon.Data.Config;
+using ClientCommon.Data.InformationContext;
 
 namespace ClientCommon.WebInterface
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args, IScriptProvider scriptProvider, IConfigurationManager configurationManager, IClientInformationContext informationContext) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(configurationManager);
+                    services.AddSingleton(informationContext);
+                    services.AddSingleton(scriptProvider);
+                    services.AddHostedService<ClientService.ClientService>();
                 });
     }
 }

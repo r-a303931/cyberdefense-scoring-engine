@@ -16,8 +16,10 @@ namespace Common.Protocol
         public Task GetSessionCompletionTask(CancellationToken cancellationToken = default);
 
 
-        public void AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler) where TMessageData : TBaseMessageType;
+        public int AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler) where TMessageData : TBaseMessageType;
+        public void RemoveMessageHandler(int id);
 
-        public Task<TMessageData> SendMessage<TMessageData>(TMessageData messageData);
+
+        public Task<TMessageData> SendMessage<TMessageData>(TMessageData messageData, CancellationToken cancellationToken = default);
     }
 }
