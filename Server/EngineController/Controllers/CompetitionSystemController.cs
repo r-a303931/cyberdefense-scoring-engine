@@ -12,27 +12,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EngineController.Controllers
 {
-	[ApiController]
-	[Route("api/systems")]
-	[Produces("application/json")]
-	public class CompetitionSystemController : Controller
-	{
-		private readonly EngineControllerContext _context;
+    [ApiController]
+    [Route("api/systems")]
+    [Produces("application/json")]
+    public class CompetitionSystemController : Controller
+    {
+        private readonly EngineControllerContext _context;
 
-		public CompetitionSystemController(EngineControllerContext context)
-		{
-			_context = context;
-		}
+        public CompetitionSystemController(EngineControllerContext context)
+        {
+            _context = context;
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> Get()
-		{
-			return new JsonResult(
-				await _context.CompetitionSystems
-					.Include(s => s.CompetitionPenalties)
-					.Include(s => s.CompetitionTasks)
-					.ToListAsync()
-			);
-		}
-	}
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return new JsonResult(
+                await _context.CompetitionSystems
+                    .Include(s => s.CompetitionPenalties)
+                    .Include(s => s.CompetitionTasks)
+                    .ToListAsync()
+            );
+        }
+    }
 }

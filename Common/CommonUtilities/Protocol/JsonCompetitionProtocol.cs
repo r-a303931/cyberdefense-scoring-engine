@@ -25,7 +25,8 @@ namespace Common.Protocol
         {
         }
 
-        public JsonCompetitionProtocol(ICompetitionProtocol<string> underlyingProtocol, ILogger? logger = null) {
+        public JsonCompetitionProtocol(ICompetitionProtocol<string> underlyingProtocol, ILogger? logger = null)
+        {
             UnderlyingProtocol = underlyingProtocol;
 
             UnderlyingProtocol.AddMessageHandler<string>((source, message) =>
@@ -38,7 +39,8 @@ namespace Common.Protocol
                 }
             });
 
-            UnderlyingProtocol.OnDisconnect += (source, ev) => {
+            UnderlyingProtocol.OnDisconnect += (source, ev) =>
+            {
                 OnDisconnect?.Invoke(source, ev);
             };
 
@@ -151,7 +153,7 @@ namespace Common.Protocol
 
         public async Task<TResponseData> GetResponseAsync<TResponseData, TMessageData>(TMessageData messageData, int timeout = 3000, CancellationToken cancellationToken = default)
             where TResponseData : CompetitionMessage
-            where TMessageData  : CompetitionMessage
+            where TMessageData : CompetitionMessage
         {
             var task = Task.WhenAny(
                 GetMessageAsync<TResponseData>(timeout, (msg) => msg.ResponseGuid == messageData.ResponseGuid, cancellationToken)

@@ -1,0 +1,73 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": ".NET Core Attach",
+			"type": "coreclr",
+			"request": "attach"
+		},
+		{
+			"name": "Launch EngineController",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build EngineController",
+			"program": "${workspaceFolder}/Server/EngineController/bin/Debug/net5.0/EngineController.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/Server/EngineController",
+			"stopAtEntry": false,
+			"serverReadyAction": {
+				"action": "openExternally",
+				"pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+			},
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
+			"sourceFileMap": {
+				"/Views": "${workspaceFolder}/Views"
+			}
+		},
+		{
+			"name": "Launch Windows Client",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build WindowsClient",
+			"program": "${workspaceFolder}/Windows/WindowsClient/bin/Debug/net5.0/win-x64/WindowsClient.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/Windows/WindowsClient",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
+		{
+			"name": "Launch Windows Installer",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build WindowsInstaller",
+			"program": "${workspaceFolder}/Windows/WindowsInstaller/bin/Debug/net5.0/win-x64/WindowsInstaller.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/Windows/WindowsInstaller",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
+		{
+			"name": "Launch LinuxClient",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build LinuxClient",
+			"program": "${workspaceFolder}/Linux/LinuxClient/bin/Debug/net5.0/linux-x64/LinuxClient.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/Linux/LinuxClient",
+			"stopAtEntry": false,
+		},
+		{
+			"name": "Launch LinuxInstaller",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Build LinuxInstaller",
+			"program": "${workspaceFolder}/Linux/LinuxInstaller/bin/Debug/net5.0/linux-x64/LinuxInstaller.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/Linux/LinuxInstaller",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		}
+	]
+}

@@ -16,7 +16,7 @@ namespace ClientCommon.Data.InformationContext
 
         private Team? Team { get; set; }
         private CompetitionSystem? CompetitionSystem { get; set; }
-        
+
 
         public async Task SetTeamIdAsync(int id, CancellationToken cancellationToken = default)
         {

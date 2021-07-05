@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Common.Models
 {
-	public enum ScriptType
-	{
-		Lua = 0,
-		Python = 1,
-	}
+    public enum ScriptType
+    {
+        Lua = 0,
+        Python = 1,
+    }
 }

@@ -8,7 +8,7 @@ namespace ClientCommon.ClientService
 {
     public interface IScriptProvider
     {
-#region User utility functions
+        #region User utility functions
         bool UserExists(string username);
 
         string[] UserGroups(string username);
@@ -18,9 +18,9 @@ namespace ClientCommon.ClientService
         bool DoesPasswordExpire(string username);
 
         bool IsAdmin(string username);
-#endregion
+        #endregion
 
-#region System utility functions
+        #region System utility functions
         /**
          * Returns an integer status representing the status of the requested service
          * 
@@ -47,6 +47,6 @@ namespace ClientCommon.ClientService
         int GlobalMinPasswordAge();
 
         int GlobalPasswordHistoryLength();
-#endregion
+        #endregion
     }
 }

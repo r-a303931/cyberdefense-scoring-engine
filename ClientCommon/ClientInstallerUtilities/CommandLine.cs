@@ -13,7 +13,7 @@ namespace ClientCommon.Installer.Utilities
 {
     public class CommandLine
     {
-        public async static Task Execute (string[] args, string installPath, Assembly assembly, IConfigurationManager configurationManager, IClientInformationContext informationContext, Hashtable fileMappings, Func<Task> extraSetup)
+        public async static Task Execute(string[] args, string installPath, Assembly assembly, IConfigurationManager configurationManager, IClientInformationContext informationContext, Hashtable fileMappings, Func<Task> extraSetup)
         {
             int? inputSystemId = null;
             int? inputTeamId = null;
@@ -55,7 +55,7 @@ namespace ClientCommon.Installer.Utilities
                 }
             }
 
-            switch(command)
+            switch (command)
             {
                 case "test":
                     await ExecuteTest(inputControllerHost, configurationManager, informationContext);

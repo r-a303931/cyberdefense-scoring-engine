@@ -12,18 +12,18 @@ namespace EngineController.Workers
 {
     public class Program
     {
-		public static void Main(string[] args)
-		{
-			var host = CreateHostBuilder(args).Build();
+        public static void Main(string[] args)
+        {
+            var host = CreateHostBuilder(args).Build();
 
-			CreateDbIfNotExists(host);
+            CreateDbIfNotExists(host);
 
-			host.Run();
-		}
+            host.Run();
+        }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-				.ConfigureAppConfiguration((context, builder) => builder
+                .ConfigureAppConfiguration((context, builder) => builder
                     .AddJsonFile("appsettings.json")
                     .AddJsonFile($"appsettings.{Environment.OSVersion.Platform}.json", optional: true)
                     .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true)
@@ -37,21 +37,21 @@ namespace EngineController.Workers
                     services.AddHostedService<TcpService>();
                 });
 
-		private static void CreateDbIfNotExists(IHost host)
-		{
-			using var scope = host.Services.CreateScope();
-			var services = scope.ServiceProvider;
+        private static void CreateDbIfNotExists(IHost host)
+        {
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
 
-			try
-			{
-				var context = services.GetRequiredService<EngineControllerContext>();
-				context.Database.EnsureCreated();
-			}
-			catch (Exception ex)
-			{
-				var logger = services.GetRequiredService<ILogger<Program>>();
-				logger.LogError(ex, "An error occurred creating the DB.");
-			}
-		}
+            try
+            {
+                var context = services.GetRequiredService<EngineControllerContext>();
+                context.Database.EnsureCreated();
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred creating the DB.");
+            }
+        }
     }
 }

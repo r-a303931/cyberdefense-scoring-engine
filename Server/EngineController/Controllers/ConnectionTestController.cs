@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EngineController.Controllers
 {
-	[ApiController]
-	[Route("api/connection")]
-	[Produces("application/json")]
+    [ApiController]
+    [Route("api/connection")]
+    [Produces("application/json")]
     public class ConnectionTestController : Controller
     {
         [HttpGet]

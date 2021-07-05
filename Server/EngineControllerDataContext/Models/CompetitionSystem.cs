@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace EngineController.Models
 {
-	public class CompetitionSystem
-	{
-		public int ID { get; set; }
+    public class CompetitionSystem
+    {
+        public int ID { get; set; }
 
-		[DisplayName("README Text")]
-		public string ReadmeText { get; set; }
+        [DisplayName("README Text")]
+        public string ReadmeText { get; set; }
 
-		[DisplayName("System Name")]
-		public string SystemIdentifier { get; set; }
+        [DisplayName("System Name")]
+        public string SystemIdentifier { get; set; }
 
-		public ICollection<CompetitionPenalty> CompetitionPenalties { get; set; }
+        public ICollection<CompetitionPenalty> CompetitionPenalties { get; set; }
 
-		public ICollection<CompetitionTask> CompetitionTasks { get; set; }
-	}
+        public ICollection<CompetitionTask> CompetitionTasks { get; set; }
+    }
 }

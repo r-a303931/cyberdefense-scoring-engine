@@ -1,0 +1,185 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build WindowsClient",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Windows/WindowsClient/WindowsClient.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Publish WindowsClient",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"publish",
+				"${workspaceFolder}/Windows/WindowsClient/WindowsClient.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Watch Build WindowsClient",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"build",
+				"--project",
+				"${workspaceFolder}/Windows/WindowsClient/WindowsClient.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Build WindowsInstaller",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Windows/WindowsInstaller/WindowsInstaller.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Publish WindowsInstaller",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"publish",
+				"${workspaceFolder}/Windows/WindowsInstaller/WindowsInstaller.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": ["Publish WindowsClient"]
+		},
+		{
+			"label": "Watch Build WindowsInstaller",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"build",
+				"--project",
+				"${workspaceFolder}/Windows/WindowsInstaller/WindowsInstaller.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Build EngineController",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Server/EngineController/EngineController.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Watch EngineController",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"run",
+				"--project",
+				"${workspaceFolder}/Server/EngineController/EngineController.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Build LinuxClient",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Linux/LinuxClient/LinuxClient.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Publish LinuxClient",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"publish",
+				"${workspaceFolder}/Linux/LinuxClient/LinuxClient.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Watch Build LinuxClient",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"build",
+				"--project",
+				"${workspaceFolder}/Linux/LinuxClient/LinuxClient.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Build LinuxInstaller",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/Linux/LinuxInstaller/LinuxInstaller.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Publish LinuxInstaller",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"publish",
+				"${workspaceFolder}/Linux/LinuxInstaller/LinuxInstaller.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile",
+			"dependsOn": ["Publish LinuxClient"]
+		},
+		{
+			"label": "Watch Build LinuxInstaller",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"build",
+				"--project",
+				"${workspaceFolder}/Linux/LinuxInstaller/LinuxInstaller.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	]
+}
