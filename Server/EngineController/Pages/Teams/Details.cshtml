@@ -27,8 +27,50 @@
             @Html.DisplayFor(model => model.Team.Points)
         </dd>
     </dl>
+
+    <h5>Registered systems</h5>
+    <hr />
+    <table>
+        <thead>
+            <tr>
+                <th>System</th>
+                <th>Currently Online</th>
+                <th>Last seen online</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var registeredVM in Model.Team.RegisteredVirtualMachines)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => registeredVM.CompetitionSystem.SystemIdentifier)</td>
+
+                    <td class="@(registeredVM.IsConnectedNow ? "online" : "offline")">
+                        @(registeredVM.IsConnectedNow ? "Online" : "Offline")
+                    </td>
+
+                    <td>@Html.DisplayFor(modelItem => registeredVM.LastCheckIn)</td>
+
+                    <td>@Html.DisplayFor(modelItem => registeredVM.Points)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Team.ID">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+
+@section Styles {
+    <style>
+        .online {
+            color: lawngreen;
+        }
+
+        .offline {
+            color: red;
+        }
+    </style>
+}

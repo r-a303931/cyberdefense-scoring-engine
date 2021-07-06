@@ -12,9 +12,9 @@ namespace EngineController.Pages.Teams
 {
     public class DetailsModel : PageModel
     {
-        private readonly EngineController.Data.EngineControllerContext _context;
+        private readonly EngineControllerContext _context;
 
-        public DetailsModel(EngineController.Data.EngineControllerContext context)
+        public DetailsModel(EngineControllerContext context)
         {
             _context = context;
         }
@@ -33,6 +33,12 @@ namespace EngineController.Pages.Teams
                 .ThenInclude(p => p.CompetitionPenalty)
                 .Include(t => t.CompletedCompetitionTasks)
                 .ThenInclude(p => p.CompetitionTask)
+                .Include(t => t.RegisteredVirtualMachines)
+                .ThenInclude(r => r.CompetitionSystem)
+                .Include(t => t.RegisteredVirtualMachines)
+                .ThenInclude(r => r.CompetitionPenalties)
+                .Include(t => t.RegisteredVirtualMachines)
+                .ThenInclude(r => r.CompetitionTasks)
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Team == null)

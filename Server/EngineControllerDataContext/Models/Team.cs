@@ -23,8 +23,18 @@ namespace EngineController.Models
         {
             get
             {
-                var penaltyPoints = (from penalty in AppliedCompetitionPenalties select penalty.CompetitionPenalty.Points).Sum();
-                var taskPoints = (from task in CompletedCompetitionTasks select task.CompetitionTask.Points).Sum();
+                var penaltyPoints = (
+                    from penalty
+                    in AppliedCompetitionPenalties
+                    group penalty by penalty.VmId into penaltyGroup
+                    select penaltyGroup.First().CompetitionPenalty.Points
+                ).Sum();
+                var taskPoints = (
+                    from task
+                    in CompletedCompetitionTasks
+                    group task by task.VmId into taskGroup
+                    select taskGroup.First().CompetitionTask.Points
+                ).Sum();
 
                 return taskPoints - penaltyPoints;
             }

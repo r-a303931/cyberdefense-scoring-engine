@@ -183,6 +183,7 @@ namespace EngineController.Workers.TcpConnectionService
             // These are assigned later on
             int teamID = 0;
             int SystemIdentifier = 0;
+            Guid VmId = default;
 
             var firstMessage = await await Task.WhenAny(
                 protocol.GetMessageAsync<Login>(-1, cancellationToken: cancellationToken)
@@ -214,6 +215,7 @@ namespace EngineController.Workers.TcpConnectionService
 
                     teamID = teamVmRegistration.TeamID;
                     SystemIdentifier = teamVmRegistration.SystemIdentifier;
+                    VmId = teamVmRegistration.VmId;
 
                     teamVmRegistration.IsConnectedNow = true;
                     await context.SaveChangesAsync(cancellationToken);
@@ -236,6 +238,7 @@ namespace EngineController.Workers.TcpConnectionService
 
                     teamID = rvm.TeamId;
                     SystemIdentifier = rvm.SystemIdentifier;
+                    VmId = rvm.Id;
 
                     try
                     {
@@ -289,6 +292,7 @@ namespace EngineController.Workers.TcpConnectionService
                         IEnumerable<int> collectionTaskIDs = from task
                                                              in team.CompletedCompetitionTasks
                                                              where task.CompetitionTask.SystemIdentifier == SystemIdentifier
+                                                                && task.VmId == VmId
                                                              select task.CompetitionTaskID;
 
                         IEnumerable<int> taskIDsToBeAdded = taskIDs.Except(collectionTaskIDs);
@@ -299,7 +303,8 @@ namespace EngineController.Workers.TcpConnectionService
                             team.CompletedCompetitionTasks.Add(new Models.CompletedCompetitionTask
                             {
                                 TeamID = team.ID,
-                                CompetitionTaskID = taskIDToAdd
+                                CompetitionTaskID = taskIDToAdd,
+                                VmId = VmId
                             });
                         }
 
@@ -308,7 +313,8 @@ namespace EngineController.Workers.TcpConnectionService
                             team.CompletedCompetitionTasks.Remove(new Models.CompletedCompetitionTask
                             {
                                 TeamID = team.ID,
-                                CompetitionTaskID = taskIDToRemove
+                                CompetitionTaskID = taskIDToRemove,
+                                VmId = VmId
                             });
                         }
 
@@ -342,11 +348,13 @@ namespace EngineController.Workers.TcpConnectionService
 
                         var team = await context.Teams
                             .Include(t => t.AppliedCompetitionPenalties)
+                            .ThenInclude(p => p.CompetitionPenalty)
                             .FirstOrDefaultAsync(team => team.ID == teamID);
 
                         IEnumerable<int> competitionPenaltyIDs = from penalty
                                                                  in team.AppliedCompetitionPenalties
                                                                  where penalty.CompetitionPenalty.SystemIdentifier == SystemIdentifier
+                                                                    && penalty.VmId == VmId
                                                                  select penalty.CompetitionPenaltyID;
 
                         IEnumerable<int> taskIDsToBeAdded = penaltyIDs.Except(competitionPenaltyIDs);
@@ -357,7 +365,8 @@ namespace EngineController.Workers.TcpConnectionService
                             team.AppliedCompetitionPenalties.Add(new Models.AppliedCompetitionPenalty
                             {
                                 TeamID = team.ID,
-                                CompetitionPenaltyID = penaltyIDToAdd
+                                CompetitionPenaltyID = penaltyIDToAdd,
+                                VmId = VmId
                             });
                         }
 
@@ -366,7 +375,8 @@ namespace EngineController.Workers.TcpConnectionService
                             team.AppliedCompetitionPenalties.Remove(new Models.AppliedCompetitionPenalty
                             {
                                 TeamID = team.ID,
-                                CompetitionPenaltyID = penaltyIDToRemove
+                                CompetitionPenaltyID = penaltyIDToRemove,
+                                VmId = VmId
                             });
                         }
 

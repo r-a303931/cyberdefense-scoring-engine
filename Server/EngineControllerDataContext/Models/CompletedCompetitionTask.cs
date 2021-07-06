@@ -11,9 +11,13 @@ namespace EngineController.Models
         public int TeamID { get; set; }
         public int CompetitionTaskID { get; set; }
 
+        public Guid VmId { get; set; }
+
         [JsonIgnore]
         public Team Team { get; set; }
         [JsonIgnore]
         public CompetitionTask CompetitionTask { get; set; }
+        [JsonIgnore]
+        public RegisteredVirtualMachine AppliedVirtualMachine { get; set; }
     }
 }

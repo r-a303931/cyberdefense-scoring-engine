@@ -39,7 +39,7 @@ namespace EngineController.Data
 
             modelBuilder.Entity<AppliedCompetitionPenalty>()
                 .ToTable("AppliedCompetitionPenalties")
-                .HasKey(p => new { p.CompetitionPenaltyID, p.TeamID });
+                .HasKey(p => new { p.CompetitionPenaltyID, p.TeamID, p.VmId });
             modelBuilder.Entity<AppliedCompetitionPenalty>()
                 .HasOne(p => p.Team)
                 .WithMany()
@@ -50,10 +50,15 @@ namespace EngineController.Data
                 .WithMany()
                 .HasForeignKey(p => p.CompetitionPenaltyID)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AppliedCompetitionPenalty>()
+                .HasOne(p => p.AppliedVirtualMachine)
+                .WithMany()
+                .HasForeignKey(t => t.VmId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CompletedCompetitionTask>()
                 .ToTable("CompletedCompetitionTasks")
-                .HasKey(p => new { p.CompetitionTaskID, p.TeamID });
+                .HasKey(p => new { p.CompetitionTaskID, p.TeamID, p.VmId });
             modelBuilder.Entity<CompletedCompetitionTask>()
                 .HasOne(t => t.Team)
                 .WithMany()
@@ -63,6 +68,11 @@ namespace EngineController.Data
                 .HasOne(t => t.CompetitionTask)
                 .WithMany()
                 .HasForeignKey(t => t.CompetitionTaskID)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CompletedCompetitionTask>()
+                .HasOne(t => t.AppliedVirtualMachine)
+                .WithMany()
+                .HasForeignKey(t => t.VmId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Team>()
@@ -95,6 +105,14 @@ namespace EngineController.Data
                 .HasOne(r => r.CompetitionSystem)
                 .WithMany()
                 .HasForeignKey(r => r.SystemIdentifier);
+            modelBuilder.Entity<RegisteredVirtualMachine>()
+                .HasMany(vm => vm.CompetitionPenalties)
+                .WithOne()
+                .HasForeignKey(p => p.VmId);
+            modelBuilder.Entity<RegisteredVirtualMachine>()
+                .HasMany(vm => vm.CompetitionTasks)
+                .WithOne()
+                .HasForeignKey(p => p.VmId);
         }
     }
 }
