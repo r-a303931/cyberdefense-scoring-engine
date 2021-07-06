@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClientCommon.ClientService
+﻿namespace ClientCommon.ClientService
 {
     public interface IScriptProvider
     {
         #region User utility functions
-        bool UserExists(string username);
+        public bool UserExists(string username);
 
-        string[] UserGroups(string username);
+        public string[] UserGroups(string username);
 
-        bool HasEmptyPassword(string username);
+        public bool HasEmptyPassword(string username);
 
-        bool DoesPasswordExpire(string username);
+        public bool DoesPasswordExpire(string username);
 
-        bool IsAdmin(string username);
+        public bool IsAdmin(string username);
+
+        public bool IsAccountLocked(string username);
         #endregion
 
         #region System utility functions
@@ -27,26 +23,32 @@ namespace ClientCommon.ClientService
          * 0 = not installed/not found
          * 1 = installed, not running or enabled
          * 2 = installed, running but not enabled
-         * 3 = installed, running, and enabled
+         * 3 = installed, not running but enabled
+         * 4 = installed, running, and enabled
          */
-        int ServiceStatus(string serviceName);
+        public int ServiceStatus(string serviceName);
 
-        bool ProgramInstalled(string programName);
+        /**
+         * On Linux, this checks for the package; on Windows, it should check the registry
+         */
+        public bool ProgramInstalled(string programName);
 
         /**
          * Program path depends on system; for Linux, it's the package name, for Windows, it's the path to the exe
+         * 
+         * Returns empty string if program is not found
          */
-        string ProgramVersion(string programPath);
+        public string ProgramVersion(string programPath);
 
-        bool CheckFirewallEnabled();
+        public bool IsFirewallEnabled();
 
-        int GlobalMinimumPasswordLength();
+        public int GlobalMinimumPasswordLength();
 
-        int GlobalMaxPasswordAge();
+        public int GlobalMaxPasswordAge();
 
-        int GlobalMinPasswordAge();
+        public int GlobalMinPasswordAge();
 
-        int GlobalPasswordHistoryLength();
+        public int GlobalPasswordHistoryLength();
         #endregion
     }
 }

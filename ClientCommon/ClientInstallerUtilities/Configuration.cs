@@ -19,12 +19,9 @@ namespace ClientCommon.Installer.Utilities
             var resources = installerAssembly.GetManifestResourceNames();
             resourceRegex ??= new Regex(@"Clients\..*\.Installer\.Resources\.(.*)");
 
-            Console.WriteLine($"{resources.Length}");
-
 
             foreach (string resourceName in resources.ToList())
             {
-                Console.WriteLine(resourceName);
                 if (resourceRegex.IsMatch(resourceName))
                 {
                     var matches = resourceRegex.Matches(resourceName);
@@ -65,6 +62,11 @@ namespace ClientCommon.Installer.Utilities
             config.TeamID = await GetTeamId(informationContext, inputTeamId, cancellationToken);
 
             await configurationManager.SaveConfiguration(config, cancellationToken);
+
+            if (config.TeamID is int teamId)
+            {
+                await informationContext.RegisterVM(teamId, cancellationToken);
+            }
 
             return config;
         }

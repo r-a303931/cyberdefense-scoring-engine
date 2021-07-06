@@ -13,10 +13,15 @@
 	<ApplicationManifest>WindowsClient.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\ClientCommon\ClientDataManager\ClientService.csproj" />
     <ProjectReference Include="..\..\ClientCommon\ClientData\ClientData.csproj" />
     <ProjectReference Include="..\..\ClientCommon\ClientWebInterface\ClientWebInterface.csproj" />
+    <ProjectReference Include="..\..\Win32Constants\Win32Constants.vcxproj" />
     <ProjectReference Include="..\WindowsConstants\WindowsConstants.csproj" />
   </ItemGroup>
 

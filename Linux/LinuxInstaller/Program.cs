@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using ClientCommon.Data.Config;
 using ClientCommon.Data.InformationContext;
 using ClientCommon.Installer.Utilities;
+
 using Clients.Linux.Constants;
 
 namespace Clients.Linux.Installer
@@ -21,7 +22,7 @@ namespace Clients.Linux.Installer
             IConfigurationManager configurationManager = new LinuxFileConfigurationManager();
             IClientInformationContext informationContext = new TcpClientInformationClientContext(configurationManager);
 
-            EnsureUserIsRoot();
+            Util.EnsureUserIsRoot();
 
             CommandLine.Execute(
                 args,
@@ -41,18 +42,6 @@ namespace Clients.Linux.Installer
                     ));
                 }
             ).Wait();
-        }
-
-        [DllImport("libc")]
-        private static extern uint getuid();
-
-        private static void EnsureUserIsRoot()
-        {
-            if (getuid() != 0)
-            {
-                Console.Error.WriteLine("Rerun the command as root");
-                throw new Exception();
-            }
         }
     }
 }

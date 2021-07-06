@@ -8,7 +8,7 @@ using ClientCommon.Data.InformationContext;
 
 namespace ClientCommon.WebInterface
 {
-    public class Program
+    public class WebInterfaceProgram
     {
         public static IHostBuilder CreateHostBuilder(string[] args, IScriptProvider scriptProvider, IConfigurationManager configurationManager, IClientInformationContext informationContext) =>
             Host.CreateDefaultBuilder(args)
@@ -21,7 +21,7 @@ namespace ClientCommon.WebInterface
                     services.AddSingleton(configurationManager);
                     services.AddSingleton(informationContext);
                     services.AddSingleton(scriptProvider);
-                    services.AddHostedService<ClientService.ClientService>();
+                    services.AddHostedService<VerificationService>();
                 });
     }
 }

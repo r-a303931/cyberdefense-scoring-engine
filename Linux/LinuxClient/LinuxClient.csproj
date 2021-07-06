@@ -9,6 +9,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Include="..\..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\..\ClientCommon\ClientDataManager\ClientService.csproj" />
 		<ProjectReference Include="..\..\ClientCommon\ClientData\ClientData.csproj" />
 		<ProjectReference Include="..\..\ClientCommon\ClientWebInterface\ClientWebInterface.csproj" />

@@ -13,14 +13,14 @@ using ClientCommon.Data.InformationContext;
 
 namespace ClientCommon.ClientService
 {
-    public class ClientService : BackgroundService
+    public class VerificationService : BackgroundService
     {
-        private readonly ILogger<ClientService> _logger;
+        private readonly ILogger<VerificationService> _logger;
         private readonly IScriptProvider _scriptProvider;
         private readonly IClientInformationContext _informationContext;
         private readonly IConfigurationManager _configurationManager;
 
-        public ClientService(ILogger<ClientService> logger, IScriptProvider scriptProvider, IClientInformationContext informationContext, IConfigurationManager configuration)
+        public VerificationService(ILogger<VerificationService> logger, IScriptProvider scriptProvider, IClientInformationContext informationContext, IConfigurationManager configuration)
         {
             _logger = logger;
             _scriptProvider = scriptProvider;

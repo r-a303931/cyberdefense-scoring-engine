@@ -218,7 +218,8 @@ namespace EngineController.Workers.TcpConnectionService
                     teamVmRegistration.IsConnectedNow = true;
                     await context.SaveChangesAsync(cancellationToken);
 
-                    await protocol.SendMessage(new CommandAcknowledge {
+                    await protocol.SendMessage(new CommandAcknowledge
+                    {
                         ResponseGuid = loginMessage.ResponseGuid
                     }, cancellationToken);
                 }
@@ -241,10 +242,11 @@ namespace EngineController.Workers.TcpConnectionService
                         await context.RegisteredVirtualMachines.AddAsync(teamVmRegistration, cancellationToken);
                         await context.SaveChangesAsync(cancellationToken);
 
-                        await protocol.SendMessage(new CommandAcknowledge {
+                        await protocol.SendMessage(new CommandAcknowledge
+                        {
                             ResponseGuid = rvm.ResponseGuid
                         }, cancellationToken);
-                    } 
+                    }
                     catch (Exception e)
                     {
                         await protocol.SendMessage(new CompetitionError
