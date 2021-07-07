@@ -1,4 +1,6 @@
-﻿using ClientCommon.Data.Config;
+﻿using Microsoft.Extensions.Hosting;
+
+using ClientCommon.Data.Config;
 using ClientCommon.Data.InformationContext;
 using ClientCommon.WebInterface;
 
@@ -15,12 +17,15 @@ namespace Clients.Linux.Main
 
             Util.EnsureUserIsRoot();
 
-            WebInterfaceProgram.CreateHostBuilder(
-                args,
-                new LinuxScriptProvider(),
-                configurationManager,
-                informationContext
-            );
+            WebInterfaceProgram
+                .CreateHostBuilder(
+                    args,
+                    new LinuxScriptProvider(),
+                    configurationManager,
+                    informationContext
+                )
+                .Build()
+                .Run();
         }
     }
 }

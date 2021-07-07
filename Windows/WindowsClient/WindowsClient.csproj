@@ -1,28 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-	<PublishSingleFile>true</PublishSingleFile>
-	<SelfContained>true</SelfContained>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<PublishTrimmed>true</PublishTrimmed>
-	<PublishReadyToRun>true</PublishReadyToRun>
-	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	<RootNamespace>Clients.Windows.Main</RootNamespace>
-	<ApplicationManifest>WindowsClient.manifest</ApplicationManifest>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<PublishTrimmed>true</PublishTrimmed>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<RootNamespace>Clients.Windows.Main</RootNamespace>
+		<ApplicationManifest>WindowsClient.manifest</ApplicationManifest>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\ClientCommon\ClientDataManager\ClientService.csproj" />
-    <ProjectReference Include="..\..\ClientCommon\ClientData\ClientData.csproj" />
-    <ProjectReference Include="..\..\ClientCommon\ClientWebInterface\ClientWebInterface.csproj" />
-    <ProjectReference Include="..\..\Win32Constants\Win32Constants.vcxproj" />
-    <ProjectReference Include="..\WindowsConstants\WindowsConstants.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\ClientCommon\ClientDataManager\ClientService.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientData\ClientData.csproj" />
+		<ProjectReference Include="..\..\ClientCommon\ClientWebInterface\ClientWebInterface.csproj" />
+		<ProjectReference Include="..\WindowsConstants\WindowsConstants.csproj" />
+	</ItemGroup>
 
 </Project>

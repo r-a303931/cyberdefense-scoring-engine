@@ -8,8 +8,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using ClientCommon.Data.Config;
+using MoonSharp.Interpreter;
+using IronPython.Hosting;
+
 using ClientCommon.Data.InformationContext;
+using Common.Models;
+
+using ClientCommon.ClientService.ScriptUtilities;
 
 namespace ClientCommon.ClientService
 {
@@ -18,22 +23,155 @@ namespace ClientCommon.ClientService
         private readonly ILogger<VerificationService> _logger;
         private readonly IScriptProvider _scriptProvider;
         private readonly IClientInformationContext _informationContext;
-        private readonly IConfigurationManager _configurationManager;
 
-        public VerificationService(ILogger<VerificationService> logger, IScriptProvider scriptProvider, IClientInformationContext informationContext, IConfigurationManager configuration)
+        public VerificationService(ILogger<VerificationService> logger, IScriptProvider scriptProvider, IClientInformationContext informationContext)
         {
             _logger = logger;
             _scriptProvider = scriptProvider;
             _informationContext = informationContext;
-            _configurationManager = configuration;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            UserData.RegisterType(_scriptProvider.GetType());
+            UserData.RegisterAssembly();
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(500, cancellationToken);
+                await Task.Delay(1500, cancellationToken);
+
+                await VerifySystem(cancellationToken);
             }
+        }
+
+        public async Task VerifySystem(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var teamInfo = await _informationContext.GetTeam(cancellationToken);
+                var system = await _informationContext.GetSystem(cancellationToken);
+
+                await Task.WhenAll(
+                    Task.Run(async () =>
+                    {
+                        var completedTasks = new List<CompetitionTask>();
+
+                        foreach (var task in system.CompetitionTasks)
+                        {
+                            if (await IsTaskCompleted(task, cancellationToken))
+                            {
+                                completedTasks.Add(task);
+                            }
+                        }
+
+                        await _informationContext.SetCompletedTasksAsync(completedTasks, cancellationToken);
+                    }, cancellationToken),
+                    Task.Run(async () =>
+                    {
+                        var appliedPenalties = new List<CompetitionPenalty>();
+
+                        foreach (var penalty in system.CompetitionPenalties)
+                        {
+                            if (await DoesPenaltyApply(penalty, cancellationToken))
+                            {
+                                appliedPenalties.Add(penalty);
+                            }
+                        }
+
+                        await _informationContext.SetAppliedPenaltiesAsync(appliedPenalties);
+                    }, cancellationToken)
+                );
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not verify system");
+            }
+        }
+
+        private Task<bool> DoesPenaltyApply(CompetitionPenalty penalty, CancellationToken cancellationToken = default)
+        {
+            bool DoesLuaPenaltyApply(string scriptCode)
+            {
+                var script = new Script();
+                var Penalty = new LuaPenalty();
+
+                script.Globals.Set("Penalty", UserData.Create(Penalty));
+                script.Globals.Set("Env", UserData.Create(_scriptProvider));
+
+                DynValue result = script.DoString(scriptCode);
+
+                return result.Number == Penalty.ApplyPenalty;
+            }
+
+            bool DoesPythonPenaltyApply(string script)
+            {
+                var engine = Python.CreateEngine();
+                var scope = engine.CreateScope();
+                var source = engine.CreateScriptSourceFromString(script);
+                var penalty = new PythonPenalty();
+
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    engine.Runtime.LoadAssembly(assembly);
+                }
+
+                scope.SetVariable("Penalty", penalty);
+                scope.SetVariable("Env", _scriptProvider);
+
+                var result = source.Execute(scope);
+
+                return result == penalty.ApplyPenalty();
+            }
+
+            return penalty.ScriptType switch
+            {
+                ScriptType.Lua => Task.Run(() => DoesLuaPenaltyApply(penalty.PenaltyScript), cancellationToken),
+                ScriptType.Python => Task.Run(() => DoesPythonPenaltyApply(penalty.PenaltyScript), cancellationToken),
+                _ => throw new Exception("Invalid script type")
+            };
+        }
+
+        private Task<bool> IsTaskCompleted(CompetitionTask task, CancellationToken cancellationToken = default)
+        {
+            bool IsLuaTaskCompleted(string scriptCode)
+            {
+                var script = new Script();
+                var Task = new LuaTask();
+
+                script.Globals.Set("Task", UserData.Create(Task));
+                script.Globals.Set("Env", UserData.Create(_scriptProvider));
+
+                DynValue result = script.DoString(scriptCode);
+
+                return result.Number == Task.TaskCompleted;
+            }
+
+            bool IsPythonTaskCompleted(string scriptCode)
+            {
+                var engine = Python.CreateEngine();
+                var scope = engine.CreateScope();
+                var source = engine.CreateScriptSourceFromString(scriptCode);
+                var task = new PythonTask();
+
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    engine.Runtime.LoadAssembly(assembly);
+                }
+
+                scope.SetVariable("Penalty", task);
+                scope.SetVariable("Env", _scriptProvider);
+
+                var result = source.Execute(scope);
+
+                return result == task.TaskCompleted();
+            }
+
+            return task.ScriptType switch
+            {
+                ScriptType.Lua => Task.Run(() => IsLuaTaskCompleted(task.ValidationScript), cancellationToken),
+                ScriptType.Python => Task.Run(() => IsPythonTaskCompleted(task.ValidationScript), cancellationToken),
+                _ => throw new Exception("Unknown script type")
+            };
         }
     }
 }

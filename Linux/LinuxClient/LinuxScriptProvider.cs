@@ -8,7 +8,7 @@ using ClientCommon.ClientService;
 
 namespace Clients.Linux.Main
 {
-    internal class LinuxScriptProvider : IScriptProvider
+    public class LinuxScriptProvider : IScriptProvider
     {
         #region User utility functions
         public bool UserExists(string username) =>

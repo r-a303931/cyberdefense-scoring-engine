@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 using Common;
 using ClientCommon.ClientService;
@@ -11,7 +9,7 @@ using Microsoft.Win32;
 
 namespace Clients.Windows.Main
 {
-    internal class WindowsScriptProvider : IScriptProvider
+    public class WindowsScriptProvider : IScriptProvider
     {
         #region User utility functions
         public bool UserExists(string username) =>
@@ -231,10 +229,14 @@ namespace Clients.Windows.Main
         [DllImport("Kernel32.dll")]
         internal static extern int CloseHandle(IntPtr handle);
 
-        [DllImport("Win32Constants.dll")]
+        /*[DllImport("Win32Constants.dll")]
         internal static extern uint GetLogon32_Logon_Network();
 
         [DllImport("Win32Constants.dll")]
-        internal static extern uint GetLogon32_Provider_Default();
+        internal static extern uint GetLogon32_Provider_Default();*/
+
+        internal static uint GetLogon32_Logon_Network() => 3;
+
+        internal static uint GetLogon32_Provider_Default() => 0;
     }
 }

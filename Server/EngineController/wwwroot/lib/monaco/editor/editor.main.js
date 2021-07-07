@@ -1,3 +1,5 @@
+// @ts-ignore
+
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Version: 0.21.2(67b5a8116f3c0bace36b180e524e05bb750a16d8)
