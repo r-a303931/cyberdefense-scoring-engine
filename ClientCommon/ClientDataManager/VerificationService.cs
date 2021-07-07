@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,6 +64,7 @@ namespace ClientCommon.ClientService
 
                         await _informationContext.SetCompletedTasksAsync(completedTasks, cancellationToken);
                     }, cancellationToken),
+
                     Task.Run(async () =>
                     {
                         var appliedPenalties = new List<CompetitionPenalty>();
