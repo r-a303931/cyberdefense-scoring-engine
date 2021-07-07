@@ -2,10 +2,18 @@
 {
     public class PythonTask
     {
-#pragma warning disable CA1822 // Mark members as static
-        public int TaskCompleted() => 0;
+        public bool IsCompleted { get; private set; }
 
-        public int TaskIncomplete() => 1;
-#pragma warning restore CA1822 // Mark members as static
+        public int TaskCompleted()
+        {
+            IsCompleted = true;
+            throw new FinishExecutionException();
+        }
+
+        public int TaskIncomplete()
+        {
+            IsCompleted = false;
+            throw new FinishExecutionException();
+        }
     }
 }

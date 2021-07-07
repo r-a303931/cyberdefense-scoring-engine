@@ -98,9 +98,15 @@ namespace ClientCommon.ClientService
                 script.Globals.Set("Penalty", UserData.Create(Penalty));
                 script.Globals.Set("Env", UserData.Create(_scriptProvider));
 
-                DynValue result = script.DoString(scriptCode);
+                try
+                {
+                    DynValue result = script.DoString(scriptCode);
+                }
+                catch (FinishExecutionException)
+                {
+                }
 
-                return result.Number == Penalty.ApplyPenalty;
+                return Penalty.DoesApply;
             }
 
             bool DoesPythonPenaltyApply(string script)
@@ -118,9 +124,15 @@ namespace ClientCommon.ClientService
                 scope.SetVariable("Penalty", penalty);
                 scope.SetVariable("Env", _scriptProvider);
 
-                var result = source.Execute(scope);
+                try
+                {
+                    var result = source.Execute(scope);
+                }
+                catch (FinishExecutionException)
+                {
+                }
 
-                return result == penalty.ApplyPenalty();
+                return penalty.DoesApply;
             }
 
             return penalty.ScriptType switch
@@ -141,9 +153,15 @@ namespace ClientCommon.ClientService
                 script.Globals.Set("Task", UserData.Create(Task));
                 script.Globals.Set("Env", UserData.Create(_scriptProvider));
 
-                DynValue result = script.DoString(scriptCode);
+                try
+                {
+                    DynValue result = script.DoString(scriptCode);
+                }
+                catch (FinishExecutionException)
+                {
+                }
 
-                return result.Number == Task.TaskCompleted;
+                return Task.IsCompleted;
             }
 
             bool IsPythonTaskCompleted(string scriptCode)
@@ -161,9 +179,15 @@ namespace ClientCommon.ClientService
                 scope.SetVariable("Penalty", task);
                 scope.SetVariable("Env", _scriptProvider);
 
-                var result = source.Execute(scope);
+                try
+                {
+                    var result = source.Execute(scope);
+                }
+                catch (FinishExecutionException)
+                {
+                }
 
-                return result == task.TaskCompleted();
+                return task.IsCompleted;
             }
 
             return task.ScriptType switch

@@ -5,8 +5,18 @@ namespace ClientCommon.ClientService.ScriptUtilities
     [MoonSharpUserData]
     public class LuaPenalty
     {
-        public readonly int ApplyPenalty = 0;
+        public bool DoesApply { get; private set; }
 
-        public readonly int DontApplyPenalty = 1;
+        public void ApplyPenalty()
+        {
+            DoesApply = true;
+            throw new FinishExecutionException();
+        }
+
+        public void DontApplyPenalty()
+        {
+            DoesApply = false;
+            throw new FinishExecutionException();
+        }
     }
 }
