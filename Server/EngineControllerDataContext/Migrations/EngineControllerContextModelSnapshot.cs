@@ -14,7 +14,7 @@ namespace EngineController.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.6");
+                .HasAnnotation("ProductVersion", "5.0.7");
 
             modelBuilder.Entity("EngineController.Models.AppliedCompetitionPenalty", b =>
                 {
@@ -25,14 +25,24 @@ namespace EngineController.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("VmId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("AppliedVirtualMachineVmId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("TeamID1")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("CompetitionPenaltyID", "TeamID");
+                    b.HasKey("CompetitionPenaltyID", "TeamID", "VmId");
+
+                    b.HasIndex("AppliedVirtualMachineVmId");
 
                     b.HasIndex("TeamID");
 
                     b.HasIndex("TeamID1");
+
+                    b.HasIndex("VmId");
 
                     b.ToTable("AppliedCompetitionPenalties");
                 });
@@ -55,12 +65,31 @@ namespace EngineController.Migrations
                     b.Property<int>("ScriptType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SystemIdentifier")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SystemIdentifier");
+
+                    b.ToTable("CompetitionPenalties");
+                });
+
+            modelBuilder.Entity("EngineController.Models.CompetitionSystem", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReadmeText")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("SystemIdentifier")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
-                    b.ToTable("CompetitionPenalties");
+                    b.ToTable("CompetitionSystem");
                 });
 
             modelBuilder.Entity("EngineController.Models.CompetitionTask", b =>
@@ -75,8 +104,8 @@ namespace EngineController.Migrations
                     b.Property<int>("ScriptType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("SystemIdentifier")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("SystemIdentifier")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("TaskName")
                         .HasColumnType("TEXT");
@@ -85,6 +114,8 @@ namespace EngineController.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("SystemIdentifier");
 
                     b.ToTable("CompetitionTasks");
                 });
@@ -97,30 +128,58 @@ namespace EngineController.Migrations
                     b.Property<int>("TeamID")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("VmId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("AppliedVirtualMachineVmId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("TeamID1")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("CompetitionTaskID", "TeamID");
+                    b.HasKey("CompetitionTaskID", "TeamID", "VmId");
+
+                    b.HasIndex("AppliedVirtualMachineVmId");
 
                     b.HasIndex("TeamID");
 
                     b.HasIndex("TeamID1");
 
+                    b.HasIndex("VmId");
+
                     b.ToTable("CompletedCompetitionTasks");
                 });
 
-            modelBuilder.Entity("EngineController.Models.Readme", b =>
+            modelBuilder.Entity("EngineController.Models.RegisteredVirtualMachine", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("VmId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("ID");
+                    b.Property<bool>("IsConnectedNow")
+                        .HasColumnType("INTEGER");
 
-                    b.ToTable("Readme");
+                    b.Property<DateTime>("LastCheckIn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SystemIdentifier")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TeamID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("TeamID1")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("VmId");
+
+                    b.HasIndex("SystemIdentifier");
+
+                    b.HasIndex("TeamID");
+
+                    b.HasIndex("TeamID1");
+
+                    b.ToTable("RegisteredVirtualMachines");
                 });
 
             modelBuilder.Entity("EngineController.Models.Team", b =>
@@ -139,6 +198,10 @@ namespace EngineController.Migrations
 
             modelBuilder.Entity("EngineController.Models.AppliedCompetitionPenalty", b =>
                 {
+                    b.HasOne("EngineController.Models.RegisteredVirtualMachine", "AppliedVirtualMachine")
+                        .WithMany()
+                        .HasForeignKey("AppliedVirtualMachineVmId");
+
                     b.HasOne("EngineController.Models.CompetitionPenalty", "CompetitionPenalty")
                         .WithMany()
                         .HasForeignKey("CompetitionPenaltyID")
@@ -155,13 +218,43 @@ namespace EngineController.Migrations
                         .WithMany("AppliedCompetitionPenalties")
                         .HasForeignKey("TeamID1");
 
+                    b.HasOne("EngineController.Models.RegisteredVirtualMachine", null)
+                        .WithMany("CompetitionPenalties")
+                        .HasForeignKey("VmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppliedVirtualMachine");
+
                     b.Navigation("CompetitionPenalty");
 
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("EngineController.Models.CompetitionPenalty", b =>
+                {
+                    b.HasOne("EngineController.Models.CompetitionSystem", null)
+                        .WithMany("CompetitionPenalties")
+                        .HasForeignKey("SystemIdentifier")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EngineController.Models.CompetitionTask", b =>
+                {
+                    b.HasOne("EngineController.Models.CompetitionSystem", null)
+                        .WithMany("CompetitionTasks")
+                        .HasForeignKey("SystemIdentifier")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EngineController.Models.CompletedCompetitionTask", b =>
                 {
+                    b.HasOne("EngineController.Models.RegisteredVirtualMachine", "AppliedVirtualMachine")
+                        .WithMany()
+                        .HasForeignKey("AppliedVirtualMachineVmId");
+
                     b.HasOne("EngineController.Models.CompetitionTask", "CompetitionTask")
                         .WithMany()
                         .HasForeignKey("CompetitionTaskID")
@@ -178,9 +271,54 @@ namespace EngineController.Migrations
                         .WithMany("CompletedCompetitionTasks")
                         .HasForeignKey("TeamID1");
 
+                    b.HasOne("EngineController.Models.RegisteredVirtualMachine", null)
+                        .WithMany("CompetitionTasks")
+                        .HasForeignKey("VmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppliedVirtualMachine");
+
                     b.Navigation("CompetitionTask");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("EngineController.Models.RegisteredVirtualMachine", b =>
+                {
+                    b.HasOne("EngineController.Models.CompetitionSystem", "CompetitionSystem")
+                        .WithMany()
+                        .HasForeignKey("SystemIdentifier")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EngineController.Models.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EngineController.Models.Team", null)
+                        .WithMany("RegisteredVirtualMachines")
+                        .HasForeignKey("TeamID1");
+
+                    b.Navigation("CompetitionSystem");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("EngineController.Models.CompetitionSystem", b =>
+                {
+                    b.Navigation("CompetitionPenalties");
+
+                    b.Navigation("CompetitionTasks");
+                });
+
+            modelBuilder.Entity("EngineController.Models.RegisteredVirtualMachine", b =>
+                {
+                    b.Navigation("CompetitionPenalties");
+
+                    b.Navigation("CompetitionTasks");
                 });
 
             modelBuilder.Entity("EngineController.Models.Team", b =>
@@ -188,6 +326,8 @@ namespace EngineController.Migrations
                     b.Navigation("AppliedCompetitionPenalties");
 
                     b.Navigation("CompletedCompetitionTasks");
+
+                    b.Navigation("RegisteredVirtualMachines");
                 });
 #pragma warning restore 612, 618
         }

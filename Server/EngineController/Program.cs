@@ -36,7 +36,7 @@ namespace EngineController
             try
             {
                 var context = services.GetRequiredService<Data.EngineControllerContext>();
-                context.Database.Migrate();
+                context.Database.EnsureCreated();
             }
             catch (Exception ex)
             {

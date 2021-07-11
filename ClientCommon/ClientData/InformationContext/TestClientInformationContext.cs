@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -35,8 +34,8 @@ namespace ClientCommon.Data.InformationContext
                 {
                     ID = 1,
                     Name = "Alpha",
-                    AppliedCompetitionPenalties = { },
-                    CompletedCompetitionTasks = { }
+                    AppliedCompetitionPenalties = new List<AppliedCompetitionPenalty>(),
+                    CompletedCompetitionTasks = new List<CompletedCompetitionTask>()
                 }
             }.ToList());
         }
@@ -56,8 +55,8 @@ namespace ClientCommon.Data.InformationContext
             {
                 new CompetitionSystem
                 {
-                    CompetitionPenalties = { },
-                    CompetitionTasks = { },
+                    CompetitionPenalties = new List<CompetitionPenalty>(),
+                    CompetitionTasks = new List<CompetitionTask>(),
                     ID = 1,
                     ReadmeText = "",
                     SystemIdentifier = "Windows 10"

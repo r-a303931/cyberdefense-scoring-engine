@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Protocol.CompetitionMessages
 {
-    public class CompetitionMessage : IJsonProtocolMessage
+    public abstract class CompetitionMessage : IJsonProtocolMessage
     {
         /// When sending a message, this should be the new GUID. When responding,
         /// it should be overwritten with the ResponseGuid provided in the original

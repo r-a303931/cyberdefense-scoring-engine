@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,6 +60,7 @@ namespace Common.Protocol
             Buffer.BlockCopy(bytes, 0, finalBytes, SyncBytes.Length + lengthBytes.Length, bytes.Length);
 
             await Stream.WriteAsync(finalBytes, cancellationToken);
+            await Stream.FlushAsync(cancellationToken);
 
             return messageData;
         }
@@ -127,7 +129,12 @@ namespace Common.Protocol
                 }
                 catch (Exception e)
                 {
-                    if (e is InvalidOperationException or TaskCanceledException or OperationCanceledException)
+                    if (e is AggregateException ex)
+                    {
+                        ex.Handle(_ => true);
+                        OnDisconnect?.Invoke(null, null);
+                    }
+                    else if (e is InvalidOperationException or TaskCanceledException or OperationCanceledException or IOException or SocketException)
                     {
                         OnDisconnect?.Invoke(null, null);
                     }

@@ -32,7 +32,8 @@ namespace ClientCommon.ClientService
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             UserData.RegisterType(_scriptProvider.GetType());
-            UserData.RegisterAssembly();
+            UserData.RegisterType<LuaPenalty>();
+            UserData.RegisterType<LuaTask>();
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -48,6 +49,12 @@ namespace ClientCommon.ClientService
             {
                 var teamInfo = await _informationContext.GetTeam(cancellationToken);
                 var system = await _informationContext.GetSystem(cancellationToken);
+
+                if (system is null)
+                {
+                    _logger.LogWarning("System is not yet set up");
+                    return;
+                }
 
                 await Task.WhenAll(
                     Task.Run(async () =>

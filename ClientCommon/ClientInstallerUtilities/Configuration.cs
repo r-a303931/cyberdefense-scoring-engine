@@ -106,7 +106,7 @@ namespace ClientCommon.Installer.Utilities
 
         private static async Task<string> GetServerHost(IClientInformationContext informationContext, string inputServerHost, CancellationToken token = default)
         {
-            while (!await informationContext.TestConnectionAsync(inputServerHost, cancellationToken: token))
+            while (inputServerHost is null || !await informationContext.TestConnectionAsync(inputServerHost, cancellationToken: token))
             {
                 Console.WriteLine("Enter the host of the engine controller");
                 Console.WriteLine(" > ");

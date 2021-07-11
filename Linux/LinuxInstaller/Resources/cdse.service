@@ -1,0 +1,10 @@
+﻿[Unit]
+Description=Cyber Defense Scoring Engine
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/CDSE/LinuxClient
+
+[Install]
+WantedBy=multi-user.target

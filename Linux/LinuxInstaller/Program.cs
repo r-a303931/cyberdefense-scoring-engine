@@ -24,24 +24,29 @@ namespace Clients.Linux.Installer
 
             Util.EnsureUserIsRoot();
 
-            CommandLine.Execute(
-                args,
-                Constants.Constants.InstallPath,
-                Assembly.GetExecutingAssembly(),
-                configurationManager,
-                informationContext,
-                new Hashtable
-                {
-
-                },
-                async () =>
-                {
-                    await Common.ProcessManagement.RunProcessAsync(Process.Start(
-                        "systemctl",
-                        new string[] { "enable", "--now", "cyberdefense-scoring-engine" }
-                    ));
-                }
-            ).Wait();
+            CommandLine
+                .Execute(
+                    args,
+                    Constants.Constants.InstallPath,
+                    Assembly.GetExecutingAssembly(),
+                    configurationManager,
+                    informationContext,
+                    new Hashtable
+                    {
+                        { "Clients.Linux.Installer.Resources.cdse.service", "/etc/systemd/system/cdse.service" },
+                    },
+                    async () =>
+                    {
+                        await Common.ProcessManagement.RunProcessAsync(Process.Start(
+                            "systemctl", new string[] { "daemon-reload"}
+                        ));
+                        await Common.ProcessManagement.RunProcessAsync(Process.Start(
+                            "systemctl",
+                            new string[] { "enable", "--now", "cyberdefense-scoring-engine" }
+                        ));
+                    }
+                )
+                .Wait();
         }
     }
 }
