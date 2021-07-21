@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +24,7 @@ namespace ClientCommon.Data.InformationContext
         {
             var client = new TcpClient(host, Constants.TcpControlPort);
             CompetitionProtocol = new JsonCompetitionProtocol(client);
+            CompetitionProtocol.StartConnection();
         }
 
         public TcpClientInformationClientContext(Config.IConfigurationManager configurationManager)
@@ -45,6 +45,7 @@ namespace ClientCommon.Data.InformationContext
             {
                 var client = new TcpClient(host, Constants.TcpControlPort);
                 CompetitionProtocol = new JsonCompetitionProtocol(client);
+                CompetitionProtocol.StartConnection();
             }
             else
             {
@@ -204,10 +205,12 @@ namespace ClientCommon.Data.InformationContext
 
         public async Task<bool> TestConnectionAsync(string host, bool verbose = false, CancellationToken cancellationToken = default)
         {
-            using var client = new TcpClient(host, Constants.TcpControlPort);
-            using var protocol = new JsonCompetitionProtocol(client);
+            using var protocol = new JsonCompetitionProtocol(host, Constants.TcpControlPort);
+            protocol.StartConnection();
 
             await protocol.SendHeartbeat(cancellationToken);
+
+            await protocol.DisposeAsync();
 
             return true;
         }

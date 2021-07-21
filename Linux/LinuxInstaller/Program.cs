@@ -38,7 +38,7 @@ namespace Clients.Linux.Installer
                     async () =>
                     {
                         await Common.ProcessManagement.RunProcessAsync(Process.Start(
-                            "systemctl", new string[] { "daemon-reload"}
+                            "systemctl", new string[] { "daemon-reload" }
                         ));
                         await Common.ProcessManagement.RunProcessAsync(Process.Start(
                             "systemctl",

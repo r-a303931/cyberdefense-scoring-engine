@@ -21,5 +21,7 @@ namespace Common.Protocol
 
 
         public Task<TMessageData> SendMessage<TMessageData>(TMessageData messageData, CancellationToken cancellationToken = default);
+
+        public void StartConnection();
     }
 }

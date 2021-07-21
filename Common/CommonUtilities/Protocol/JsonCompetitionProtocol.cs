@@ -21,6 +21,11 @@ namespace Common.Protocol
         private readonly List<InternalMessageHandler> MessageHandlers = new();
         private readonly ILogger? _logger;
 
+        public JsonCompetitionProtocol(string host, int port, ILogger? logger = null)
+            : this(new TcpClient(host, port), logger)
+        {
+        }
+
         public JsonCompetitionProtocol(TcpClient socket, ILogger? logger = null)
             : this(new StreamCompetitionProtocol(socket.GetStream()), logger)
         {
@@ -41,7 +46,7 @@ namespace Common.Protocol
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(/*e, */$"Could not handle message: {message}");
+                    _logger?.LogError(e, $"Could not handle message: {message}");
                 }
             });
 
@@ -62,6 +67,11 @@ namespace Common.Protocol
 
                 await SendMessage(acknowledge);
             });
+        }
+
+        public void StartConnection()
+        {
+            UnderlyingProtocol.StartConnection();
         }
 
         public async Task GetSessionCompletionTask(CancellationToken cancellationToken = default)

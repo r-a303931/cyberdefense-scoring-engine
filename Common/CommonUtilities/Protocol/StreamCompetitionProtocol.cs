@@ -19,7 +19,7 @@ namespace Common.Protocol
 
         public Stream Stream { get; init; }
         private List<EventHandler<string>> EventHandlers { get; } = new();
-        private Task Task { get; init; }
+        private Task Task { get; set; }
         private CancellationTokenSource CancellationTokenSource { get; } = new();
 
         /**
@@ -28,6 +28,14 @@ namespace Common.Protocol
         public StreamCompetitionProtocol(Stream stream)
         {
             Stream = stream;
+        }
+
+        public void StartConnection()
+        {
+            if (Task != null)
+            {
+                throw new Exception("Cannot listen on stream twice");
+            }
 
             Task = ListenOnStream();
         }
@@ -76,19 +84,16 @@ namespace Common.Protocol
             CancellationTokenSource.Cancel();
 
             await Task;
+
+            await Stream.DisposeAsync();
         }
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
 
-            CancellationTokenSource.Cancel();
-
-            Task.Wait();
-
-            Stream.Dispose();
+            DisposeAsync().AsTask().Wait();
         }
-
 
         private async Task ListenOnStream()
         {

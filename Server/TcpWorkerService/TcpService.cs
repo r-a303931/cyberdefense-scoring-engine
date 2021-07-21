@@ -51,6 +51,7 @@ namespace EngineController.Workers.TcpConnectionService
         {
             // Make it easier to dispose of the TcpClient
             using var protocol = new JsonCompetitionProtocol(client, _logger);
+            protocol.StartConnection();
 
             protocol.AddMessageHandler<Requests.GetCompetitionSystems>(async (source, msg) =>
             {
@@ -104,7 +105,7 @@ namespace EngineController.Workers.TcpConnectionService
                         ErrorMessage = $"Could not get systems: {e.Message}"
                     });
 
-                    _logger.LogError(/*e, */"Could not get systems");
+                    _logger.LogError(e, "Could not get systems");
                 }
             });
 
@@ -174,7 +175,7 @@ namespace EngineController.Workers.TcpConnectionService
                         ErrorMessage = $"Could not get teams: {e.Message}"
                     });
 
-                    _logger.LogError($"Could not get teams: {e.Message}\n{e.StackTrace}");
+                    _logger.LogError(e, $"Could not get teams");
                 }
             });
 
@@ -258,7 +259,7 @@ namespace EngineController.Workers.TcpConnectionService
                                 ResponseGuid = rvm.ResponseGuid,
                                 ErrorMessage = "Could not register VM: " + e.Message
                             }, cancellationToken);
-                            _logger.LogError(/*e, */"Could not register VM");
+                            _logger.LogError(e, "Could not register VM");
 
                             return;
                         }
@@ -277,12 +278,12 @@ namespace EngineController.Workers.TcpConnectionService
             catch (AggregateException e)
             {
                 e.Handle(ex => true);
-                _logger.LogError(/*e, */"Could not login VM before closing connection");
+                _logger.LogError(e, "Could not login VM before closing connection");
                 return;
             }
             catch (Exception e)
             {
-                _logger.LogError(/*e, */"Could not login VM before closing connection");
+                _logger.LogError(e, "Could not login VM before closing connection");
                 return;
             }
 
@@ -346,7 +347,7 @@ namespace EngineController.Workers.TcpConnectionService
                             ErrorMessage = $"Could not set completed tasks: {e.Message}"
                         });
 
-                        _logger.LogError($"Could not set completed tasks: {e.Message}\n{e.StackTrace}");
+                        _logger.LogError(e, $"Could not set completed tasks");
                     }
                 });
 
@@ -408,7 +409,7 @@ namespace EngineController.Workers.TcpConnectionService
                             ErrorMessage = $"Could not set penalties: {e.Message}"
                         });
 
-                        _logger.LogError($"Could not set penalties: {e.Message}\n{e.StackTrace}");
+                        _logger.LogError(e, $"Could not set penalties");
                     }
                 });
 
@@ -422,7 +423,7 @@ namespace EngineController.Workers.TcpConnectionService
                     ErrorMessage = $"Could not login: {e.Message}"
                 }, cancellationToken);
 
-                _logger.LogError($"Could not login: {e.Message}\n{e.StackTrace}");
+                _logger.LogError(e, $"Could not login");
             }
             finally
             {

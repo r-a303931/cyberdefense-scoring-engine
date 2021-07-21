@@ -10,13 +10,13 @@ namespace Common.Protocol
 {
     internal static class Extensions
     {
-        private static readonly byte[] Buffer = new byte[1];
-
         public static async Task<byte> ReadByteAsync(this Stream s, CancellationToken cancellationToken = default)
         {
-            await s.ReadAsync(Buffer.AsMemory(), cancellationToken);
+            byte[] buffer = new byte[1];
 
-            return Buffer[0];
+            await s.ReadAsync(buffer.AsMemory(), cancellationToken);
+
+            return buffer[0];
         }
     }
 }
