@@ -205,7 +205,8 @@ namespace ClientCommon.Data.InformationContext
 
         public async Task<bool> TestConnectionAsync(string host, bool verbose = false, CancellationToken cancellationToken = default)
         {
-            using var protocol = new JsonCompetitionProtocol(host, Constants.TcpControlPort);
+            using var client = new TcpClient(host, Constants.TcpControlPort);
+            using var protocol = new JsonCompetitionProtocol(client);
             protocol.StartConnection();
 
             await protocol.SendHeartbeat(cancellationToken);

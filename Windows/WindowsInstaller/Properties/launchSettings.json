@@ -2,7 +2,7 @@
   "profiles": {
     "WindowsInstaller": {
       "commandName": "Project",
-      "commandLineArgs": "test -c 192.168.1.169"
+      "commandLineArgs": "install -c 127.0.0.1"
     }
   }
 }

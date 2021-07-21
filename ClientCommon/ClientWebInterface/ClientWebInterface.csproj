@@ -11,12 +11,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Common\CommonUtilities\CommonUtilities.csproj" />
 		<ProjectReference Include="..\..\Common\SimpleModels\Models.csproj" />
-		<ProjectReference Include="..\ClientCommon\ClientDataManager\ClientService.csproj" />
-		<ProjectReference Include="..\ClientCommon\ClientData\ClientData.csproj" />
 		<ProjectReference Include="..\ClientDataManager\ClientService.csproj" />
 		<ProjectReference Include="..\ClientData\ClientData.csproj" />
-		<ProjectReference Include="..\Common\CommonUtilities\CommonUtilities.csproj" />
-		<ProjectReference Include="..\Common\SimpleModels\Models.csproj" />
 	</ItemGroup>
 
 </Project>

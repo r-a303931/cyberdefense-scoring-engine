@@ -62,7 +62,7 @@ namespace EngineController.Workers.TcpConnectionService
 
                     var systems = await context.CompetitionSystems.ToListAsync();
 
-                    await protocol.SendMessage(new CompetitionSystemsList
+                    var message = new CompetitionSystemsList
                     {
                         ResponseGuid = msg.ResponseGuid,
                         CompetitionSystems = from competitionSystem
@@ -95,7 +95,9 @@ namespace EngineController.Workers.TcpConnectionService
                                                  ReadmeText = competitionSystem.ReadmeText,
                                                  SystemIdentifier = competitionSystem.SystemIdentifier
                                              }
-                    });
+                    };
+
+                    await protocol.SendMessage(message);
                 }
                 catch (Exception e)
                 {
@@ -196,83 +198,81 @@ namespace EngineController.Workers.TcpConnectionService
                         .ContinueWith(lm => (CompetitionMessage)lm.Result)
                 );
 
-                using (var scope = _serviceProvider.CreateScope())
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetService<EngineControllerContext>();
+
+                if (firstMessage is Login loginMessage)
                 {
-                    var context = scope.ServiceProvider.GetService<EngineControllerContext>();
+                    teamVmRegistration = await context.RegisteredVirtualMachines.FirstOrDefaultAsync(rvm => rvm.VmId == loginMessage.VmId, cancellationToken);
 
-                    if (firstMessage is Login loginMessage)
+                    if (teamVmRegistration is null)
                     {
-                        teamVmRegistration = await context.RegisteredVirtualMachines.FirstOrDefaultAsync(rvm => rvm.VmId == loginMessage.VmId, cancellationToken);
-
-                        if (teamVmRegistration is null)
+                        await protocol.SendMessage(new CompetitionError
                         {
-                            await protocol.SendMessage(new CompetitionError
-                            {
-                                ResponseGuid = loginMessage.ResponseGuid,
-                                ErrorMessage = "Could not find VM registration"
-                            }, cancellationToken);
+                            ResponseGuid = loginMessage.ResponseGuid,
+                            ErrorMessage = "Could not find VM registration"
+                        }, cancellationToken);
 
-                            return;
-                        }
+                        return;
+                    }
 
-                        teamID = teamVmRegistration.TeamID;
-                        SystemIdentifier = teamVmRegistration.SystemIdentifier;
-                        VmId = teamVmRegistration.VmId;
+                    teamID = teamVmRegistration.TeamID;
+                    SystemIdentifier = teamVmRegistration.SystemIdentifier;
+                    VmId = teamVmRegistration.VmId;
 
-                        teamVmRegistration.IsConnectedNow = true;
+                    teamVmRegistration.IsConnectedNow = true;
+                    await context.SaveChangesAsync(cancellationToken);
+
+                    await protocol.SendMessage(new CommandAcknowledge
+                    {
+                        ResponseGuid = loginMessage.ResponseGuid
+                    }, cancellationToken);
+                }
+                else if (firstMessage is RegisterVM rvm)
+                {
+                    teamVmRegistration = new Models.RegisteredVirtualMachine
+                    {
+                        VmId = rvm.Id,
+                        SystemIdentifier = rvm.SystemIdentifier,
+                        IsConnectedNow = true,
+                        LastCheckIn = DateTime.Now,
+                        TeamID = rvm.TeamId
+                    };
+
+                    teamID = rvm.TeamId;
+                    SystemIdentifier = rvm.SystemIdentifier;
+                    VmId = rvm.Id;
+
+                    try
+                    {
+                        await context.RegisteredVirtualMachines.AddAsync(teamVmRegistration, cancellationToken);
                         await context.SaveChangesAsync(cancellationToken);
 
                         await protocol.SendMessage(new CommandAcknowledge
                         {
-                            ResponseGuid = loginMessage.ResponseGuid
+                            ResponseGuid = rvm.ResponseGuid
                         }, cancellationToken);
                     }
-                    else if (firstMessage is RegisterVM rvm)
-                    {
-                        teamVmRegistration = new Models.RegisteredVirtualMachine
-                        {
-                            VmId = rvm.Id,
-                            SystemIdentifier = rvm.SystemIdentifier,
-                            IsConnectedNow = true,
-                            LastCheckIn = DateTime.Now,
-                            TeamID = rvm.TeamId
-                        };
-
-                        teamID = rvm.TeamId;
-                        SystemIdentifier = rvm.SystemIdentifier;
-                        VmId = rvm.Id;
-
-                        try
-                        {
-                            await context.RegisteredVirtualMachines.AddAsync(teamVmRegistration, cancellationToken);
-                            await context.SaveChangesAsync(cancellationToken);
-
-                            await protocol.SendMessage(new CommandAcknowledge
-                            {
-                                ResponseGuid = rvm.ResponseGuid
-                            }, cancellationToken);
-                        }
-                        catch (Exception e)
-                        {
-                            await protocol.SendMessage(new CompetitionError
-                            {
-                                ResponseGuid = rvm.ResponseGuid,
-                                ErrorMessage = "Could not register VM: " + e.Message
-                            }, cancellationToken);
-                            _logger.LogError(e, "Could not register VM");
-
-                            return;
-                        }
-                    }
-                    else
+                    catch (Exception e)
                     {
                         await protocol.SendMessage(new CompetitionError
                         {
-                            ResponseGuid = firstMessage.ResponseGuid,
-                            ErrorMessage = "Invalid message sent"
+                            ResponseGuid = rvm.ResponseGuid,
+                            ErrorMessage = "Could not register VM: " + e.Message
                         }, cancellationToken);
+                        _logger.LogError(e, "Could not register VM");
+
                         return;
                     }
+                }
+                else
+                {
+                    await protocol.SendMessage(new CompetitionError
+                    {
+                        ResponseGuid = firstMessage.ResponseGuid,
+                        ErrorMessage = "Invalid message sent"
+                    }, cancellationToken);
+                    return;
                 }
             }
             catch (AggregateException e)

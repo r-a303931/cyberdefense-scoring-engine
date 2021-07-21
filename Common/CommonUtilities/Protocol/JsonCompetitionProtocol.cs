@@ -236,14 +236,14 @@ namespace Common.Protocol
             public Type Type { get; set; }
             public EventHandler<object> MessageHandler { get; set; }
             public Func<object, bool> AcceptCondition { get; set; }
-            private ILogger? _logger { get; set; }
+            private ILogger? Logger { get; set; }
 
             public InternalMessageHandler(ILogger? logger, Type type, EventHandler<object> eventHandler, Func<object, bool> acceptCondition)
             {
                 Type = type;
                 MessageHandler = eventHandler;
                 AcceptCondition = acceptCondition;
-                _logger = logger;
+                Logger = logger;
             }
 
             public bool TryAccept(string message)
@@ -271,7 +271,7 @@ namespace Common.Protocol
                         }
                         catch (Exception e)
                         {
-                            _logger?.LogError(e, $"Could not handle message {message}");
+                            Logger?.LogError(e, $"Could not handle message {message}");
                             return false;
                         }
                     }
