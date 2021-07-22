@@ -22,22 +22,30 @@ namespace Common.Protocol
         private Task Task { get; set; }
         private CancellationTokenSource CancellationTokenSource { get; } = new();
 
+        private List<string> MessageQueue { get; set; } = new();
+
         /**
          * Consumes the Stream provided
          */
         public StreamCompetitionProtocol(Stream stream)
         {
             Stream = stream;
+
+            Task = ListenOnStream();
         }
 
         public void StartConnection()
         {
-            if (Task != null)
-            {
-                throw new Exception("Cannot listen on stream twice");
-            }
+            var storedMessages = MessageQueue;
+            MessageQueue = null;
 
-            Task = ListenOnStream();
+            foreach (var msg in storedMessages)
+            {
+                foreach (var handler in EventHandlers)
+                {
+                    handler(null, msg);
+                }
+            }
         }
 
         int ICompetitionProtocol<string>.AddMessageHandler<TMessageData>(EventHandler<TMessageData> messageHandler)
@@ -127,9 +135,16 @@ namespace Common.Protocol
 
                     var value = encoding.GetString(packet);
 
-                    foreach (var handler in EventHandlers)
+                    if (MessageQueue is List<string> queue)
                     {
-                        handler(null, value);
+                        queue.Add(value);
+                    }
+                    else
+                    {
+                        foreach (var handler in EventHandlers)
+                        {
+                            handler(null, value);
+                        }
                     }
                 }
                 catch (Exception e)

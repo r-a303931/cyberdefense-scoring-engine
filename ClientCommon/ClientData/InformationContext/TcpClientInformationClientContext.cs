@@ -25,6 +25,10 @@ namespace ClientCommon.Data.InformationContext
             var client = new TcpClient(host, Constants.TcpControlPort);
             CompetitionProtocol = new JsonCompetitionProtocol(client);
             CompetitionProtocol.StartConnection();
+
+            Console.WriteLine("Waiting for system ready...");
+            CompetitionProtocol.GetMessageAsync<SystemReady>().Wait();
+            Console.WriteLine("System ready.");
         }
 
         public TcpClientInformationClientContext(Config.IConfigurationManager configurationManager)
@@ -46,6 +50,10 @@ namespace ClientCommon.Data.InformationContext
                 var client = new TcpClient(host, Constants.TcpControlPort);
                 CompetitionProtocol = new JsonCompetitionProtocol(client);
                 CompetitionProtocol.StartConnection();
+
+                Console.WriteLine("Waiting for system ready...");
+                CompetitionProtocol.GetMessageAsync<SystemReady>().Wait();
+                Console.WriteLine("System ready.");
             }
             else
             {
@@ -53,13 +61,8 @@ namespace ClientCommon.Data.InformationContext
             }
         }
 
-        public async Task<IEnumerable<CompetitionSystem>> GetAvailableSystemsAsync(CancellationToken cancellationToken = default)
-        {
-            var msg = await CompetitionProtocol.SendMessage(new Requests.GetCompetitionSystems { }, cancellationToken);
-            var result = await CompetitionProtocol.GetResponseAsync<CompetitionSystemsList, Requests.GetCompetitionSystems>(msg, cancellationToken: cancellationToken);
-
-            return result.CompetitionSystems;
-        }
+        public async Task<IEnumerable<CompetitionSystem>> GetAvailableSystemsAsync(CancellationToken cancellationToken = default) =>
+            (await CompetitionProtocol.SendMessage<Requests.GetCompetitionSystems, CompetitionSystemsList>(new Requests.GetCompetitionSystems { }, cancellationToken: cancellationToken)).CompetitionSystems;
 
         public async Task SetSystemIdentifierAsync(int SystemIdentifier, CancellationToken cancellationToken = default)
         {
@@ -73,13 +76,8 @@ namespace ClientCommon.Data.InformationContext
         public async Task<int?> GetSystemIdentifierAsync(CancellationToken cancellationToken = default) =>
             (await ConfigurationManager.LoadConfiguration(cancellationToken))?.SystemIdentifier;
 
-        public async Task<IEnumerable<Team>> GetTeamsAsync(CancellationToken cancellationToken = default)
-        {
-            var msg = await CompetitionProtocol.SendMessage(new Requests.GetTeams { }, cancellationToken);
-            var result = await CompetitionProtocol.GetResponseAsync<TeamsList, Requests.GetTeams>(msg, cancellationToken: cancellationToken);
-
-            return result.Teams;
-        }
+        public async Task<IEnumerable<Team>> GetTeamsAsync(CancellationToken cancellationToken = default) =>
+            (await CompetitionProtocol.SendMessage<Requests.GetTeams, TeamsList>(new Requests.GetTeams { }, cancellationToken: cancellationToken)).Teams;
 
         public async Task SetTeamIdAsync(int TeamID, CancellationToken cancellationToken = default)
         {
@@ -99,14 +97,12 @@ namespace ClientCommon.Data.InformationContext
 
             if (teamIdMaybe is int teamId)
             {
-                var msg = await CompetitionProtocol.SendMessage(new SetCompletedTasks
+                var msg = await CompetitionProtocol.SendVoidMessage(new SetCompletedTasks
                 {
                     TaskIds = from task
                               in tasks
                               select task.ID
-                }, cancellationToken);
-
-                await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
+                }, cancellationToken: cancellationToken);
             }
             else
             {
@@ -120,14 +116,12 @@ namespace ClientCommon.Data.InformationContext
 
             if (teamIdMaybe is int teamId)
             {
-                var msg = await CompetitionProtocol.SendMessage(new SetAppliedPenalties
+                var msg = await CompetitionProtocol.SendVoidMessage(new SetAppliedPenalties
                 {
                     PenaltyIds = from penalty
                                  in penalties
                                  select penalty.ID
-                }, cancellationToken);
-
-                await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
+                }, cancellationToken: cancellationToken);
             }
             else
             {
@@ -143,14 +137,12 @@ namespace ClientCommon.Data.InformationContext
 
             if (config.SystemIdentifier is int sysId)
             {
-                var msg = await CompetitionProtocol.SendMessage(new RegisterVM
+                await CompetitionProtocol.SendVoidMessage(new RegisterVM
                 {
                     Id = config.SystemGUID,
                     SystemIdentifier = sysId,
                     TeamId = teamID
-                }, cancellationToken);
-
-                await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
+                }, cancellationToken: cancellationToken);
             }
             else
             {
@@ -164,14 +156,12 @@ namespace ClientCommon.Data.InformationContext
 
             if (config.SystemIdentifier is int sysId && config.TeamID is int teamID)
             {
-                var msg = await CompetitionProtocol.SendMessage(new RegisterVM
+                await CompetitionProtocol.SendVoidMessage(new RegisterVM
                 {
                     Id = config.SystemGUID,
                     SystemIdentifier = sysId,
                     TeamId = teamID
-                }, cancellationToken);
-
-                await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
+                }, cancellationToken: cancellationToken);
             }
             else
             {
@@ -183,12 +173,10 @@ namespace ClientCommon.Data.InformationContext
         {
             var config = await ConfigurationManager.LoadConfiguration(cancellationToken);
 
-            var msg = await CompetitionProtocol.SendMessage(new Login
+            await CompetitionProtocol.SendVoidMessage(new Login
             {
                 VmId = config.SystemGUID
-            }, cancellationToken);
-
-            await CompetitionProtocol.GetAcknowledgementAsync(msg, cancellationToken: cancellationToken);
+            }, cancellationToken: cancellationToken);
         }
 
         public async Task<bool> TestConnectionAsync(bool verbose = false, CancellationToken cancellationToken = default)
@@ -210,8 +198,6 @@ namespace ClientCommon.Data.InformationContext
             protocol.StartConnection();
 
             await protocol.SendHeartbeat(cancellationToken);
-
-            await protocol.DisposeAsync();
 
             return true;
         }

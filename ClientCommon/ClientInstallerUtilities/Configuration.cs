@@ -84,7 +84,7 @@ namespace ClientCommon.Installer.Utilities
                 }
                 Console.Write("\n");
 
-                while (inputSystemId == 0)
+                while (inputSystemId is null || inputSystemId == 0)
                 {
                     Console.WriteLine("Enter a system to configure this system to use (either the ID or name):");
                     Console.Write(" > ");

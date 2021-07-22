@@ -51,7 +51,6 @@ namespace EngineController.Workers.TcpConnectionService
         {
             // Make it easier to dispose of the TcpClient
             using var protocol = new JsonCompetitionProtocol(client, _logger);
-            protocol.StartConnection();
 
             protocol.AddMessageHandler<Requests.GetCompetitionSystems>(async (source, msg) =>
             {
@@ -60,12 +59,15 @@ namespace EngineController.Workers.TcpConnectionService
                     using var scope = _serviceProvider.CreateScope();
                     var context = scope.ServiceProvider.GetService<EngineControllerContext>();
 
-                    var systems = await context.CompetitionSystems.ToListAsync();
+                    var systems = await context.CompetitionSystems
+                        .Include(s => s.CompetitionPenalties)
+                        .Include(s => s.CompetitionTasks)
+                        .ToListAsync();
 
                     var message = new CompetitionSystemsList
                     {
                         ResponseGuid = msg.ResponseGuid,
-                        CompetitionSystems = from competitionSystem
+                        CompetitionSystems = (from competitionSystem
                                              in systems
                                              select new CompetitionSystem
                                              {
@@ -94,7 +96,7 @@ namespace EngineController.Workers.TcpConnectionService
                                                  ID = competitionSystem.ID,
                                                  ReadmeText = competitionSystem.ReadmeText,
                                                  SystemIdentifier = competitionSystem.SystemIdentifier
-                                             }
+                                             }).ToList()
                     };
 
                     await protocol.SendMessage(message);
@@ -191,12 +193,17 @@ namespace EngineController.Workers.TcpConnectionService
 
             try
             {
-                firstMessage = await await Task.WhenAny(
+                var firstMessageTask = Task.WhenAny(
                     protocol.GetMessageAsync<Login>(-1, cancellationToken: cancellationToken)
                         .ContinueWith(lm => (CompetitionMessage)lm.Result),
                     protocol.GetMessageAsync<RegisterVM>(-1, cancellationToken: cancellationToken)
                         .ContinueWith(lm => (CompetitionMessage)lm.Result)
                 );
+
+                protocol.StartConnection();
+                await protocol.SignalReady(cancellationToken);
+
+                firstMessage = await await firstMessageTask;
 
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetService<EngineControllerContext>();

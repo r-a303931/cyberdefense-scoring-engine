@@ -69,6 +69,8 @@ namespace Common.Protocol
             });
         }
 
+        public Task SignalReady(CancellationToken cancellationToken = default) => SendMessage(new SystemReady { }, cancellationToken);
+
         public void StartConnection()
         {
             UnderlyingProtocol.StartConnection();
@@ -213,6 +215,19 @@ namespace Common.Protocol
             return messageData;
         }
 
+        public async Task<TResponseData> SendMessage<TMessageData, TResponseData>(TMessageData messageData, int timeout = 3000, CancellationToken cancellationToken = default)
+            where TResponseData : CompetitionMessage
+            where TMessageData : CompetitionMessage
+        {
+            return await GetResponseAsync<TResponseData, TMessageData>(await SendMessage(messageData, cancellationToken), timeout, cancellationToken);
+        }
+
+        public Task<CommandAcknowledge> SendVoidMessage<TMessageData>(TMessageData messageData, int timeout = 3000, CancellationToken cancellationToken = default)
+            where TMessageData : CompetitionMessage
+        {
+            return SendMessage<TMessageData, CommandAcknowledge>(messageData, timeout, cancellationToken);
+        }
+
         public ValueTask DisposeAsync()
         {
             return UnderlyingProtocol.DisposeAsync();
@@ -224,12 +239,7 @@ namespace Common.Protocol
             UnderlyingProtocol.Dispose();
         }
 
-        public async Task<HeartbeatAcknowledge> SendHeartbeat(CancellationToken cancellationToken = default)
-        {
-            var msg = await SendMessage(new Heartbeat { }, cancellationToken);
-
-            return await GetResponseAsync<HeartbeatAcknowledge, Heartbeat>(msg, cancellationToken: cancellationToken);
-        }
+        public Task<HeartbeatAcknowledge> SendHeartbeat(CancellationToken cancellationToken = default) => SendMessage<Heartbeat, HeartbeatAcknowledge>(new Heartbeat { }, cancellationToken: cancellationToken);
 
         private class InternalMessageHandler
         {
@@ -300,15 +310,16 @@ namespace Common.Protocol
             CompetitionError = 1,
             Heartbeat = 2,
             HeartbeatAcknowledge = 3,
+            SystemReady = 4,
 
-            Login = 4,
-            RegisterVM = 5,
-            RequestsTeamList = 6,
-            RequestsSystemsList = 7,
-            TeamsList = 8,
-            SystemsList = 9,
-            SetTasks = 10,
-            SetPenalties = 11
+            Login = 5,
+            RegisterVM = 6,
+            RequestsTeamList = 7,
+            RequestsSystemsList = 8,
+            TeamsList = 9,
+            SystemsList = 10,
+            SetTasks = 11,
+            SetPenalties = 12
         }
 
         private readonly string FieldName = "TypeDiscriminator";
@@ -365,6 +376,7 @@ namespace Common.Protocol
                 TypeDiscriminator.CompetitionError => JsonSerializer.Deserialize<CompetitionError>(ref reader),
                 TypeDiscriminator.Heartbeat => JsonSerializer.Deserialize<Heartbeat>(ref reader),
                 TypeDiscriminator.HeartbeatAcknowledge => JsonSerializer.Deserialize<HeartbeatAcknowledge>(ref reader),
+                TypeDiscriminator.SystemReady => JsonSerializer.Deserialize<SystemReady>(ref reader),
                 TypeDiscriminator.Login => JsonSerializer.Deserialize<Login>(ref reader),
                 TypeDiscriminator.RegisterVM => JsonSerializer.Deserialize<RegisterVM>(ref reader),
                 TypeDiscriminator.RequestsTeamList => JsonSerializer.Deserialize<Requests.GetTeams>(ref reader),
@@ -425,6 +437,7 @@ namespace Common.Protocol
                     CompetitionSystemsList _ => TypeDiscriminator.SystemsList,
                     SetCompletedTasks _ => TypeDiscriminator.SetTasks,
                     SetAppliedPenalties _ => TypeDiscriminator.SetPenalties,
+                    SystemReady _ => TypeDiscriminator.SystemReady,
                     _ => throw new NotSupportedException()
                 },
                 value

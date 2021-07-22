@@ -1,6 +1,6 @@
 ﻿namespace Common.Protocol.CompetitionMessages
 {
-    public class CommandAcknowledge : CompetitionMessage
+    public class SystemReady : CompetitionMessage
     {
     }
 }
