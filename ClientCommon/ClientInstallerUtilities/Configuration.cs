@@ -73,9 +73,11 @@ namespace ClientCommon.Installer.Utilities
 
         private static async Task<int> GetSystemId(IClientInformationContext informationContext, int? inputSystemId, CancellationToken token = default)
         {
-            if (inputSystemId == 0 || inputSystemId is null)
+            var systems = await informationContext.GetAvailableSystemsAsync(token);
+
+            if (inputSystemId == 0 || inputSystemId is null || systems.First(s => s.ID == inputSystemId) == null)
             {
-                var systems = await informationContext.GetAvailableSystemsAsync(token);
+                inputSystemId = 0;
 
                 Console.WriteLine("Available systems:");
                 foreach (var system in systems)
@@ -100,6 +102,8 @@ namespace ClientCommon.Installer.Utilities
                     }
                 }
             }
+
+            Console.WriteLine($"Using system: ID; {systems.First(s => s.ID == (int)inputSystemId).SystemIdentifier}: {(int)inputSystemId};");
 
             return (int)inputSystemId;
         }

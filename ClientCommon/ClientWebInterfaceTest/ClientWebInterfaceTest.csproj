@@ -10,6 +10,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ClientDataManager\ClientService.csproj" />
 		<ProjectReference Include="..\ClientData\ClientData.csproj" />
 		<ProjectReference Include="..\ClientWebInterface\ClientWebInterface.csproj" />
 	</ItemGroup>

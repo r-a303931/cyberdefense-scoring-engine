@@ -2,7 +2,7 @@
 
 using ClientCommon.ClientService;
 
-namespace ClientCommon.WebInterface.Stubs
+namespace ClientWebInterfaceTest.Stubs
 {
     public class ScriptProviderStub : IScriptProvider
     {

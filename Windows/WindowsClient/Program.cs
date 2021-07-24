@@ -15,6 +15,8 @@ namespace Clients.Windows.Main
             IConfigurationManager configurationManager = new WindowsFileConfigurationManager();
             IClientInformationContext informationContext = new TcpClientInformationClientContext(configurationManager);
 
+            informationContext.ConnectAsync().Wait();
+
             WebInterfaceProgram
                 .CreateHostBuilder(
                     args,

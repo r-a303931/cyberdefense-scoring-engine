@@ -1,17 +1,14 @@
-﻿using System.Reflection;
-
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.FileProviders;
 
 using ClientCommon.ClientService;
 using ClientCommon.Data.Config;
 using ClientCommon.Data.InformationContext;
 using ClientCommon.WebInterface;
-using ClientCommon.WebInterface.Stubs;
+using ClientWebInterfaceTest.Stubs;
 
 namespace ClientWebInterfaceTest
 {

@@ -2,15 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
 using Common.Protocol.CompetitionMessages;
-using System.Text.Json.Serialization;
 
 namespace Common.Protocol
 {
@@ -39,7 +40,7 @@ namespace Common.Protocol
             {
                 try
                 {
-                    foreach (var handler in MessageHandlers)
+                    foreach (var handler in MessageHandlers.ToList())
                     {
                         handler.TryAccept(message);
                     }

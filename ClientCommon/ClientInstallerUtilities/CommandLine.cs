@@ -83,12 +83,16 @@ namespace ClientCommon.Installer.Utilities
                 await Configuration.InstallFiles(assembly, installPath, fileMappings, cancellationToken: token);
 
                 await extraSetup();
+
+                Environment.Exit(0);
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine("Could not perform setup:");
                 Console.Error.WriteLine(e.Message);
                 Console.Error.WriteLine(e.StackTrace);
+
+                Environment.Exit(1);
             }
         }
 

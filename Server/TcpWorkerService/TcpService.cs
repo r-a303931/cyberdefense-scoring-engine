@@ -69,45 +69,52 @@ namespace EngineController.Workers.TcpConnectionService
                         ResponseGuid = msg.ResponseGuid,
                         CompetitionSystems = (from competitionSystem
                                              in systems
-                                             select new CompetitionSystem
-                                             {
-                                                 CompetitionPenalties = from penalty
-                                                                        in competitionSystem.CompetitionPenalties
-                                                                        select new CompetitionPenalty
-                                                                        {
-                                                                            ID = penalty.ID,
-                                                                            Points = penalty.Points,
-                                                                            ScriptType = (ScriptType)penalty.ScriptType,
-                                                                            SystemIdentifier = penalty.SystemIdentifier,
-                                                                            PenaltyName = penalty.PenaltyName,
-                                                                            PenaltyScript = penalty.PenaltyScript
-                                                                        },
-                                                 CompetitionTasks = from task
-                                                                    in competitionSystem.CompetitionTasks
-                                                                    select new CompetitionTask
-                                                                    {
-                                                                        ID = task.ID,
-                                                                        Points = task.Points,
-                                                                        ScriptType = (ScriptType)task.ScriptType,
-                                                                        SystemIdentifier = task.SystemIdentifier,
-                                                                        TaskName = task.TaskName,
-                                                                        ValidationScript = task.ValidationScript
-                                                                    },
-                                                 ID = competitionSystem.ID,
-                                                 ReadmeText = competitionSystem.ReadmeText,
-                                                 SystemIdentifier = competitionSystem.SystemIdentifier
-                                             }).ToList()
+                                              select new CompetitionSystem
+                                              {
+                                                  CompetitionPenalties = from penalty
+                                                                         in competitionSystem.CompetitionPenalties
+                                                                         select new CompetitionPenalty
+                                                                         {
+                                                                             ID = penalty.ID,
+                                                                             Points = penalty.Points,
+                                                                             ScriptType = (ScriptType)penalty.ScriptType,
+                                                                             SystemIdentifier = penalty.SystemIdentifier,
+                                                                             PenaltyName = penalty.PenaltyName,
+                                                                             PenaltyScript = penalty.PenaltyScript
+                                                                         },
+                                                  CompetitionTasks = from task
+                                                                     in competitionSystem.CompetitionTasks
+                                                                     select new CompetitionTask
+                                                                     {
+                                                                         ID = task.ID,
+                                                                         Points = task.Points,
+                                                                         ScriptType = (ScriptType)task.ScriptType,
+                                                                         SystemIdentifier = task.SystemIdentifier,
+                                                                         TaskName = task.TaskName,
+                                                                         ValidationScript = task.ValidationScript
+                                                                     },
+                                                  ID = competitionSystem.ID,
+                                                  ReadmeText = competitionSystem.ReadmeText,
+                                                  SystemIdentifier = competitionSystem.SystemIdentifier
+                                              }).ToList()
                     };
 
                     await protocol.SendMessage(message);
                 }
                 catch (Exception e)
                 {
-                    await protocol.SendMessage(new CompetitionError
+                    try
                     {
-                        ResponseGuid = msg.ResponseGuid,
-                        ErrorMessage = $"Could not get systems: {e.Message}"
-                    });
+                        await protocol.SendMessage(new CompetitionError
+                        {
+                            ResponseGuid = msg.ResponseGuid,
+                            ErrorMessage = $"Could not get systems: {e.Message}"
+                        });
+                    }
+                    catch (Exception ee)
+                    {
+                        _logger.LogError(ee, "Could not send error message");
+                    }
 
                     _logger.LogError(e, "Could not get systems");
                 }
@@ -173,11 +180,14 @@ namespace EngineController.Workers.TcpConnectionService
                 }
                 catch (Exception e)
                 {
-                    await protocol.SendMessage(new CompetitionError
+                    try
                     {
-                        ResponseGuid = msg.ResponseGuid,
-                        ErrorMessage = $"Could not get teams: {e.Message}"
-                    });
+                        await protocol.SendMessage(new CompetitionError { ResponseGuid = msg.ResponseGuid, ErrorMessage = $"Could not get teams: {e.Message}" });
+                    }
+                    catch (Exception ee)
+                    {
+                        _logger.LogError(ee, "Could not send error message");
+                    } 
 
                     _logger.LogError(e, $"Could not get teams");
                 }
@@ -200,8 +210,10 @@ namespace EngineController.Workers.TcpConnectionService
                         .ContinueWith(lm => (CompetitionMessage)lm.Result)
                 );
 
+                _logger.LogInformation("Signalling client connection ready...");
                 protocol.StartConnection();
                 await protocol.SignalReady(cancellationToken);
+                _logger.LogInformation("Client connection ready.");
 
                 firstMessage = await await firstMessageTask;
 
@@ -348,11 +360,18 @@ namespace EngineController.Workers.TcpConnectionService
                     }
                     catch (Exception e)
                     {
-                        await protocol.SendMessage(new CompetitionError
+                        try
                         {
-                            ResponseGuid = msg.ResponseGuid,
-                            ErrorMessage = $"Could not set completed tasks: {e.Message}"
-                        });
+                            await protocol.SendMessage(new CompetitionError
+                            {
+                                ResponseGuid = msg.ResponseGuid,
+                                ErrorMessage = $"Could not set completed tasks: {e.Message}"
+                            });
+                        }
+                        catch (Exception ee)
+                        {
+                            _logger.LogError(ee, "Could not send error message");
+                        }
 
                         _logger.LogError(e, $"Could not set completed tasks");
                     }
@@ -410,11 +429,18 @@ namespace EngineController.Workers.TcpConnectionService
                     }
                     catch (Exception e)
                     {
-                        await protocol.SendMessage(new CompetitionError
+                        try
                         {
-                            ResponseGuid = msg.ResponseGuid,
-                            ErrorMessage = $"Could not set penalties: {e.Message}"
-                        });
+                            await protocol.SendMessage(new CompetitionError
+                            {
+                                ResponseGuid = msg.ResponseGuid,
+                                ErrorMessage = $"Could not set penalties: {e.Message}"
+                            });
+                        }
+                        catch (Exception ee)
+                        {
+                            _logger.LogError(ee, "Could not send error message");
+                        }
 
                         _logger.LogError(e, $"Could not set penalties");
                     }
@@ -424,11 +450,18 @@ namespace EngineController.Workers.TcpConnectionService
             }
             catch (Exception e)
             {
-                await protocol.SendMessage(new CompetitionError
+                try
                 {
-                    ResponseGuid = firstMessage.ResponseGuid,
-                    ErrorMessage = $"Could not login: {e.Message}"
-                }, cancellationToken);
+                    await protocol.SendMessage(new CompetitionError
+                    {
+                        ResponseGuid = firstMessage.ResponseGuid,
+                        ErrorMessage = $"Could not login: {e.Message}"
+                    }, cancellationToken);
+                }
+                catch (Exception ee)
+                {
+                    _logger.LogError(ee, "Could not send error message");
+                }
 
                 _logger.LogError(e, $"Could not login");
             }

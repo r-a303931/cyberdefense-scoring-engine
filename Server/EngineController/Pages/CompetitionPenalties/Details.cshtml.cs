@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using EngineController.Data;
 using EngineController.Models;
 
 namespace EngineController.Pages.CompetitionPenalties
 {
     public class DetailsModel : PageModel
     {
-        private readonly EngineController.Data.EngineControllerContext _context;
+        private readonly Data.EngineControllerContext _context;
 
-        public DetailsModel(EngineController.Data.EngineControllerContext context)
+        public DetailsModel(Data.EngineControllerContext context)
         {
             _context = context;
         }

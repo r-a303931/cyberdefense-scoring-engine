@@ -24,10 +24,13 @@ namespace ClientCommon.Data.InformationContext
         {
             var client = new TcpClient(host, Constants.TcpControlPort);
             CompetitionProtocol = new JsonCompetitionProtocol(client);
+
+            var systemReadyMessageReceivedTask = CompetitionProtocol.GetMessageAsync<SystemReady>();
+
             CompetitionProtocol.StartConnection();
 
             Console.WriteLine("Waiting for system ready...");
-            CompetitionProtocol.GetMessageAsync<SystemReady>().Wait();
+            systemReadyMessageReceivedTask.Wait();
             Console.WriteLine("System ready.");
         }
 
